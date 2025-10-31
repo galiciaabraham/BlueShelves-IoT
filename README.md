@@ -24,3 +24,7 @@ This project is built using:
 
 - Abraham Galicia (Project Lead)  
 - Add your name here.
+
+# Quotes
+
+- Abraham Galicia: "Our cause is never more in danger than when a human, no longer desiring, but still intending, to do our Enemy's will, looks round upon a universe from which every trace of Him seems to have vanished, and asks why he has been forsaken, and still obeys." -C.S Lewis, The Screwtape Letters. 
