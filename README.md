@@ -24,9 +24,12 @@ This project is built using:
 
 - Abraham Galicia (Project Lead)  
 - Thandokuhle Simelane
+- Julio Reyes
 
 # Quotes
 
 - Abraham Galicia: "Our cause is never more in danger than when a human, no longer desiring, but still intending, to do our Enemy's will, looks round upon a universe from which every trace of Him seems to have vanished, and asks why he has been forsaken, and still obeys." -C.S Lewis, The Screwtape Letters. 
 
 - Thandokuhle Simelane: “Give me a place to stand, and I will move the Earth.” by Archimedes.
+
+- Julio Reyes: "We do not think ourselves into new ways of living, we live ourselves into new ways of thinking." by Richard Rohr.
