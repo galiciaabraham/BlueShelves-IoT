@@ -2,8 +2,12 @@
   "name": "database",
   "version": "1.0.0",
   "description": "RESTful API with Express and Postg",
+  "type": "module",
   "main": "index.js",
   "scripts": {
+    "database:init": "node initDb.js",
+    "database:rebuild": "node initDb.js rebuild",
+    "database:reset": "node initDb.js reset",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
