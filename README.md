@@ -25,6 +25,7 @@ This project is built using:
 - Abraham Galicia (Project Lead)  
 - Thandokuhle Simelane
 - Julio Reyes
+- Ezenwoke Uchechukwu Promise
 
 # Quotes
 
