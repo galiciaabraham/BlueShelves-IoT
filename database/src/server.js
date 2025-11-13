@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import itemRoutes from './routes/itemRoutes.js';
+import trackingRoutes from './routes/trackingRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
@@ -10,6 +12,8 @@ app.use(express.json());
 
 // Routes
 app.use('/items', itemRoutes);
+app.use('/trackings', trackingRoutes);
+app.use('/users', userRoutes);
 
 // Base route
 app.get('/', (req, res) => {
