@@ -11,14 +11,14 @@ export const ItemModel = {
         return rows[0];
     },
 
-    async createItem({name, description, quantity = 0, sku} ) {
+    async createItem({item_name, item_color, item_size, item_quantity, item_sku}) {
         const rows = await sql`
-            INSERT INTO items (name, description, quantity, sku) VALUES (${name}, ${description}, ${quantity}, ${sku}) RETURNING *`;
+            INSERT INTO items (item_name, item_color, item_size, item_quantity, item_sku) VALUES (${item_name}, ${item_color}, ${item_size}, ${item_quantity}, ${item_sku}) RETURNING *`;
         return rows[0];
     },
 
-    async updateItem(id, {name, description, quantity, sku}) {
-        const rows = await sql`UPDATE items SET name = ${name}, description = ${description}, quantity = ${quantity}, sku = ${sku} WHERE id = ${id} RETURNING *`;
+    async updateItem(id, {item_name, item_color, item_size, item_quantity, item_sku}) {
+        const rows = await sql`UPDATE items SET item_name = ${item_name}, item_color = ${item_color}, item_size = ${item_size}, item_quantity = ${item_quantity}, item_sku = ${item_sku} WHERE id = ${id} RETURNING *`;
         return rows[0];
     },
 
