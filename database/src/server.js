@@ -1,0 +1,23 @@
+import express from 'express';
+import dotenv from 'dotenv';
+import itemRoutes from './routes/itemRoutes.js';
+import { errorHandler } from './middleware/errorHandler.js';
+
+dotenv.config();
+
+const app = express();
+app.use(express.json());
+
+// Routes
+app.use('/items', itemRoutes);
+
+// Base route
+app.get('/', (req, res) => {
+  res.send('Inventory API is running 🚀');
+});
+
+// Error handling middleware
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
