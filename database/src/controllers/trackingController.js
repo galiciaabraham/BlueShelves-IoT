@@ -1,5 +1,6 @@
 import { TrackingModel } from '../models/trackingModel.js';
 
+// Controller for tracking operations
 export const trackingController = {
   async getAllTrackings(req, res, next) {
     try {

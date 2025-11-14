@@ -1,5 +1,6 @@
 import { ItemModel } from '../models/itemModel.js';
 
+// Controller for item operations
 export const itemController = {
   async getAllItems(req, res, next) {
     try {

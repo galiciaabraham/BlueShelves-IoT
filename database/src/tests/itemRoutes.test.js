@@ -2,7 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import { jest, describe, test, expect, afterEach, beforeEach } from '@jest/globals';
 
-// Define mock data at the top level
+// Defining mock data at the top level to be used in across tests
 const mockItems = [
     {
         id: 1,
@@ -67,13 +67,13 @@ jest.unstable_mockModule('../models/itemModel.js', () => ({
 }));
 
 // Import after mocking
-const { itemController } = await import('../controllers/itemController.js');
 const itemRoutes = (await import('../routes/itemRoutes.js')).default;
 
 const app = express();
 app.use(express.json());
 app.use('/items', itemRoutes);
 
+//Clear mocks and reset return values before each test (so previous data doesn't affect new tests)
 beforeEach(() => {
   jest.clearAllMocks();
   mockItemModel.getAllItems.mockResolvedValue(mockItems);

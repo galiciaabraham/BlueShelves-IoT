@@ -1,5 +1,6 @@
 import { UserModel } from '../models/userModel.js';
 
+// Controller for user operations
 export const userController = {
   async getAllUsers(req, res, next) {
     try {
