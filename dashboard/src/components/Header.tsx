@@ -20,7 +20,9 @@ export default function Header() {
         >
           Logout
         </button>
-        <div className="w-8 h-8 bg-gray-300 rounded-full" />
+        <Link href="/profile">
+          <div className="w-8 h-8 bg-gray-300 rounded-full cursor-pointer hover:ring-2 hover:ring-blue-500" />
+        </Link>
       </div>
     </nav>
   );
