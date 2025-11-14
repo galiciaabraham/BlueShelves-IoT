@@ -9,7 +9,7 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#333',
@@ -25,5 +25,10 @@ export const globalStyles = StyleSheet.create({
     height: 1,
     width: '80%',
     backgroundColor: '#ddd',
+  },
+  actions: {
+    marginTop: 20,
+    width: '80%',
+    gap: 15,
   },
 });
