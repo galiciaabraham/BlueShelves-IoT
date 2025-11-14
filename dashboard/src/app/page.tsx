@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { mockItems } from '../../../database/mockItems'; // adjust path if needed
+import { mockItems } from '../../../database/mockItems';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -13,18 +15,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-black dark:bg-black dark:text-white">
-      {/* Top Navigation */}
-      <nav className="flex justify-between items-center px-6 py-4 border-b bg-white dark:bg-zinc-900">
-        <div className="space-x-4">
-          <button>Dashboard</button>
-          <button>Print</button>
-          <button>Settings</button>
-        </div>
-        <div className="space-x-4 flex items-center">
-          <button>Logout</button>
-          <div className="w-8 h-8 bg-gray-300 rounded-full" />
-        </div>
-      </nav>
+      <Header />
 
       {/* Search Bar */}
       <div className="px-6 py-4">
@@ -63,15 +54,7 @@ export default function Home() {
         </table>
       </div>
 
-      {/* Footer */}
-      <footer className="px-6 py-4 border-t text-center text-sm text-gray-600 dark:text-gray-400">
-        <p>© 2024 Your Website. All rights reserved.</p>
-        <div className="space-x-4">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">🔗</a>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
