@@ -4,7 +4,7 @@ This is an Expo project bootstrapped with create-expo-app.
 
 ## Getting Started
 
-First, install dependencies and run the development server:
+First, install dependencies with npm install and run the development server:
 
     npx expo start --go
     # or
