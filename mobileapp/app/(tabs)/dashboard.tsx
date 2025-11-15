@@ -2,6 +2,7 @@ import { View, Text, FlatList } from 'react-native';
 import { globalStyles } from '@/styles/globalStyles';
 import { mockItems } from '../../mockItems';
 
+
 export default function DashboardScreen() {
   // Calculate total quantity for summary
   const totalQuantity = mockItems.reduce((sum, item) => sum + item.item_quantity, 0);
