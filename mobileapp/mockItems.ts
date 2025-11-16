@@ -1,4 +1,4 @@
-// dashboard/database/mockItems.ts
+// mobileapp/mockItems.ts
 
 export const mockItems = [
   {
