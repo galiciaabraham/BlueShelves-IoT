@@ -1,6 +1,7 @@
 import { View, Text, FlatList } from 'react-native';
 import { globalStyles } from '@/styles/globalStyles';
-import { mockItems } from '../../..//database/mockItems';
+import { mockItems } from '../../mockItems';
+
 
 export default function DashboardScreen() {
   // Calculate total quantity for summary
