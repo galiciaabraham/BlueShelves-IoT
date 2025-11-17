@@ -1,6 +1,6 @@
 import { View, Text, FlatList } from 'react-native';
 import { globalStyles } from '@/styles/globalStyles';
-import { mockItems } from '../../mockItems';
+import { mockItems } from '@/mockItems';
 
 
 export default function DashboardScreen() {
