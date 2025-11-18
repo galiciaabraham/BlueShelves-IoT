@@ -49,6 +49,20 @@ export const trackingController = {
     }
   },
 
+  async patchTracking(req, res, next) {
+    const id = req.params.id;
+    const fields = req.body;
+
+    try {
+      const patched = await TrackingModel.patchTracking(id, fields);
+      res.json(patched);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to patch tracking' });
+      next(error);
+    }
+  },
+
   async deleteTracking(req, res, next) {
     try {
       const deleted = await TrackingModel.deleteTracking(req.params.id);

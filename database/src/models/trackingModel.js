@@ -22,6 +22,23 @@ export const TrackingModel = {
         return rows[0];
     },
 
+    async patchTracking(id, fields) {
+        const fields = [];
+        const values = [];
+
+        for (const key in fields) {
+            fields.push(sql`${sql.identifier(key)} = ${fields[key]}`);
+        }
+        
+        if (fields.lenght === 0) {
+            throw new Error('No fields to update');
+        }
+
+        const query = sql`UPDATE item_tracking SET ${sql.join(fields, sql`, `)} WHERE id = ${id} RETURNING *`;
+        const rows = await query;
+        return rows[0];
+    },
+
     async deleteTracking(id) {
         const rows = await sql`DELETE FROM item_tracking WHERE id = ${id} RETURNING *`;
         return rows[0];
