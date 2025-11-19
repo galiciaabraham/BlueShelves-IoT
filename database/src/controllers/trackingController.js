@@ -25,11 +25,11 @@ export const trackingController = {
 
   async createTracking(req, res, next) {
     try {
-      const {tracking_id, item_id, uuid, tracking_status} = req.body;
-      if (!tracking_id || !item_id || !uuid || !tracking_status) {
+      const {tracking_id, item_id, tracking_status} = req.body;
+      if (!tracking_id || !item_id || !tracking_status) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
-      const newTracking = await TrackingModel.createTracking({ tracking_id, item_id, uuid, tracking_status });
+      const newTracking = await TrackingModel.createTracking({ tracking_id, item_id, tracking_status });
       res.status(201).json(newTracking);
     } catch (error) {
       next(error);
@@ -38,8 +38,8 @@ export const trackingController = {
 
   async updateTracking(req, res, next) {
     try {
-      const {tracking_id, item_id, uuid, tracking_status} = req.body;
-      const updated = await TrackingModel.updateTracking(req.params.id, { tracking_id, item_id, uuid, tracking_status });
+      const {tracking_id, item_id, tracking_status} = req.body;
+      const updated = await TrackingModel.updateTracking(req.params.id, { tracking_id, item_id, tracking_status });
       if (!updated) {
         return res.status(404).json({ error: 'Tracking not found' });
       }
