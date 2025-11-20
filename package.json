@@ -1,0 +1,29 @@
+{
+  "name": "blueshelves-iot",
+  "version": "1.0.0",
+  "description": "BlueShelves will help its users to keep accurate inventory numbers. It will provide actionable data to make better decisions, and it will ease the mind of warehouse managers by taking a big load off their shoulders.BlueShelves is a simple, reliable, and effective system that will take care of your inventory for you. For now the project aims to be a small-scale or educationally oriented project to showcase IoT concepts.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/galiciaabraham/BlueShelves-IoT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/galiciaabraham/BlueShelves-IoT/issues"
+  },
+  "homepage": "https://github.com/galiciaabraham/BlueShelves-IoT#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "expo": "^54.0.25",
+    "react-native": "^0.82.1"
+  },
+  "devDependencies": {
+    "htmlhint": "^1.7.1"
+  }
+}
