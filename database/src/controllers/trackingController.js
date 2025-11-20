@@ -25,11 +25,11 @@ export const trackingController = {
 
   async createTracking(req, res, next) {
     try {
-      const {tracking_id, item_id, uuid, tracking_status} = req.body;
-      if (!tracking_id || !item_id || !uuid || !tracking_status) {
+      const {tracking_id, item_id, tracking_status} = req.body;
+      if (!tracking_id || !item_id || !tracking_status) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
-      const newTracking = await TrackingModel.createTracking({ tracking_id, item_id, uuid, tracking_status });
+      const newTracking = await TrackingModel.createTracking({ tracking_id, item_id, tracking_status });
       res.status(201).json(newTracking);
     } catch (error) {
       next(error);
@@ -38,13 +38,27 @@ export const trackingController = {
 
   async updateTracking(req, res, next) {
     try {
-      const {tracking_id, item_id, uuid, tracking_status} = req.body;
-      const updated = await TrackingModel.updateTracking(req.params.id, { tracking_id, item_id, uuid, tracking_status });
+      const {tracking_id, item_id, tracking_status} = req.body;
+      const updated = await TrackingModel.updateTracking(req.params.id, { tracking_id, item_id, tracking_status });
       if (!updated) {
         return res.status(404).json({ error: 'Tracking not found' });
       }
       res.json(updated);
     } catch (error) {
+      next(error);
+    }
+  },
+
+  async patchTracking(req, res, next) {
+    const id = req.params.id;
+    const fields = req.body;
+
+    try {
+      const patched = await TrackingModel.patchTracking(id, fields);
+      res.json(patched);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to patch tracking' });
       next(error);
     }
   },
