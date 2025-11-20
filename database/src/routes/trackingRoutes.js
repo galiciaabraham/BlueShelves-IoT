@@ -10,6 +10,8 @@ router.get('/:id', trackingController.getTrackingById);
 router.post('/', trackingController.createTracking);
 // Update tracking
 router.put('/:id', trackingController.updateTracking);
+//Patch tracking
+router.put('/patch/:id', trackingController.patchTracking); 
 // Delete tracking
 router.delete('/:id', trackingController.deleteTracking);
 
