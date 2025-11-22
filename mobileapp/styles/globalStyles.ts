@@ -83,8 +83,11 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     padding: 15,
     borderRadius: 8,
-    marginBottom: 10,
-    width: '100%',
+    margin: 10,
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
   },
   cardTitle: {
     fontSize: 18,
