@@ -1,10 +1,24 @@
+import  useInventory  from '@/app/hooks/useInventory';
+import { FlatList, ActivityIndicator, View, Text } from 'react-native';
+import { globalStyles } from '@/styles/globalStyles';
 
 
-export function DisplayItems({ items : any[]}) {
+export function DisplayItems() {
+    const { items, loading, error, refresh } = useInventory();
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    }
+    if (error) {
+        return <Text>Error: {error}</Text>;
+    }
+
     return (
         <FlatList
         data={items}
-        keyExtractor={(item) => item.item_sku}
+        keyExtractor={(item) => item.item_id.toString()}
+        refreshing={loading}
+        onRefresh={refresh}
         renderItem={({ item }) => (
           <View style={globalStyles.card}>
             <Text style={globalStyles.cardTitle}>{item.item_name}</Text>
