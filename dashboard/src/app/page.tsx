@@ -18,7 +18,7 @@ export default function Home() {
       <Header />
 
       {/* Search Bar */}
-      <div className="px-6 py-4">
+      <div className="flex gap-3 px-6 py-4 max-w-4xl mx-auto ">
         <input
           type="text"
           placeholder="Search by (SKU or Name)..."
@@ -26,10 +26,14 @@ export default function Home() {
           onChange={e => setSearch(e.target.value)}
           className="w-full p-2 border rounded"
         />
+
+        <button className="bg-blue-500 text-white py-2 px-4 cursor-pointer rounded hover:bg-blue-700 transition whitespace-nowrap">
+          New Item
+        </button>
       </div>
 
       {/* Inventory Table */}
-      <div className="px-6 py-4">
+      <div className="px-6 py-4 max-w-5xl mx-auto overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-gray-100 dark:bg-zinc-800">
