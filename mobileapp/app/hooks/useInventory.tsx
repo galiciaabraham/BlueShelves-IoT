@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { fetchAllItems } from '@/components/services/inventoryService';
 import { Item } from '@/types/itemTypes';
 
@@ -20,9 +21,11 @@ export default function useInventory() {
     }
   }
 
-    useEffect(() => {
-        loaditems();
-    }, []);
+ useFocusEffect(
+    useCallback(() => {
+      loaditems();
+    }, [])
+  );
 
     return { items, loading, error, refresh: loaditems };
 

@@ -24,8 +24,7 @@ export const itemController = {
   },
 
   async createItem(req, res, next) {
-    console.log("HEADERS:", req.headers);
-    console.log("BODY:", req.body);
+
     try {
       const { item_name, item_color, item_size, item_quantity, item_sku } = req.body;
       if (!item_name || !item_color || !item_size || !item_quantity || !item_sku) {
