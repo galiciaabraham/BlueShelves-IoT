@@ -23,7 +23,7 @@ export const TrackingModel = {
     },
 
     async patchTracking(id, fields) {
-        const fields = [];
+        fields = [];
         const values = [];
 
         for (const key in fields) {

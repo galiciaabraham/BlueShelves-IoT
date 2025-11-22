@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import itemRoutes from './routes/itemRoutes.js';
 import trackingRoutes from './routes/trackingRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -8,6 +9,14 @@ import { errorHandler } from './middleware/errorHandler.js';
 dotenv.config();
 
 const app = express();
+const allowedOrigins = ['http://localhost:8081', 'http://localhost:3000']; //Add production origins when deploying
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type'],
+  }
+));
+
 app.use(express.json());
 
 // Routes

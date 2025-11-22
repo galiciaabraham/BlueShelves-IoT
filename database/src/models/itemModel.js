@@ -13,12 +13,12 @@ export const ItemModel = {
 
     async createItem({item_name, item_color, item_size, item_quantity, item_sku}) {
         const rows = await sql`
-            INSERT INTO items (item_name, item_color, item_size, item_quantity, item_sku) VALUES (${item_name}, ${item_color}, ${item_size}, ${item_quantity}, ${item_sku}) RETURNING *`;
+            INSERT INTO items (item_name, item_color, item_size, item_quantity, item_sku, updated_at) VALUES (${item_name}, ${item_color}, ${item_size}, ${item_quantity}, ${item_sku}, NOW()) RETURNING *`;
         return rows[0];
     },
 
     async updateItem(id, {item_name, item_color, item_size, item_quantity, item_sku}) {
-        const rows = await sql`UPDATE items SET item_name = ${item_name}, item_color = ${item_color}, item_size = ${item_size}, item_quantity = ${item_quantity}, item_sku = ${item_sku} WHERE id = ${id} RETURNING *`;
+        const rows = await sql`UPDATE items SET item_name = ${item_name}, item_color = ${item_color}, item_size = ${item_size}, item_quantity = ${item_quantity}, item_sku = ${item_sku}, updated_at = NOW() WHERE id = ${id} RETURNING *`;
         return rows[0];
     },
 
