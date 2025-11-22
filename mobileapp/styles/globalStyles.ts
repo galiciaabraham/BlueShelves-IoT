@@ -98,4 +98,16 @@ export const globalStyles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
   },
+
+  // Links
+  link: {
+    color: '#FFF',
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    alignItems: 'center',
+    fontWeight: 'bold',
+  },
+
 });

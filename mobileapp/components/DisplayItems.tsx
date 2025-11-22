@@ -1,10 +1,18 @@
 import  useInventory  from '@/app/hooks/useInventory';
 import { FlatList, ActivityIndicator, View, Text } from 'react-native';
 import { globalStyles } from '@/styles/globalStyles';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 
 
 export function DisplayItems() {
     const { items, loading, error, refresh } = useInventory();
+
+    useFocusEffect(
+        useCallback(() => {
+            refresh();
+        }, [])
+    );
 
     if (loading) {
         return <ActivityIndicator size="large" color="#0000ff" />;

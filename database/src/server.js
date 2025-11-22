@@ -11,15 +11,12 @@ dotenv.config();
 const app = express();
 const allowedOrigins = ['http://localhost:8081', 'http://localhost:3000']; //Add production origins when deploying
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl) or from allowed origins
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type'],
   }
-}));
+));
+
 app.use(express.json());
 
 // Routes
