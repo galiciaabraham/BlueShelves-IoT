@@ -1,22 +1,25 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, FlatList } from 'react-native';
 import { globalStyles } from '@/styles/globalStyles';
 import SubmitScanning from '@/components/utilities/SubmitScanning';
-import { simulateScan, startScan } from '@/tagSimulator/scanService';
+import { simulateScan, startScan, ScanResult } from '@/tagSimulator/scanService';
 
 export default function ScanScreen() {
   const [isScanning, setIsScanning] = useState(false);
-  const [scannedTags, setScannedTags] = useState<any[]>([]);
+  const [scannedTags, setScannedTags] = useState<ScanResult[]>([]);
 
   // Single scan (one-off)
   const handleSingleScan = () => {
     setIsScanning(true);
 
-    // Simulate scanning delay
     setTimeout(() => {
       const result = simulateScan();
       if (result.tag) {
-        setScannedTags(prev => [...prev, { tracking_id: result.tag.item_id }]);
+        setScannedTags(prev => {
+          // Avoid duplicates by uuid
+          if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
+          return [...prev, result];
+        });
       }
       setIsScanning(false);
       alert('Pretend we found a tag 🎉');
@@ -29,9 +32,8 @@ export default function ScanScreen() {
     const stop = startScan((result) => {
       if (result.tag) {
         setScannedTags(prev => {
-          // Avoid duplicates by uuid
-          if (prev.find(t => t.tracking_id === result.tag.item_id)) return prev;
-          return [...prev, { tracking_id: result.tag.item_id }];
+          if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
+          return [...prev, result];
         });
       }
     }, 2000);
@@ -51,7 +53,6 @@ export default function ScanScreen() {
         This is a demo screen — scanning is simulated using tagSimulator.
       </Text>
 
-      {/* If scanning, show loading indicator, else show scan buttons */}
       {isScanning ? (
         <View style={{ marginTop: 20 }}>
           <ActivityIndicator size="large" color="#007bff" />
@@ -68,8 +69,31 @@ export default function ScanScreen() {
         </View>
       )}
 
-      {/* When scan is complete, show SubmitScanning component */}
-      {scannedTags.length > 0 && <SubmitScanning scannedTags={scannedTags} />}
+      {/* Dynamic list of scanned items */}
+      {scannedTags.length > 0 && (
+        <FlatList
+          style={{ marginTop: 20 }}
+          data={scannedTags}
+          keyExtractor={(item) => item.tag.uuid}
+          renderItem={({ item }) => (
+            <View style={{ marginBottom: 10, padding: 10, backgroundColor: '#f1f1f1', borderRadius: 8 }}>
+              <Text style={{ fontWeight: 'bold' }}>UUID: {item.tag.uuid}</Text>
+              <Text>Item: {item.item?.item_name}</Text>
+              <Text>Color: {item.item?.item_color}</Text>
+              <Text>Size: {item.item?.item_size}</Text>
+              <Text>Quantity: {item.item?.item_quantity}</Text>
+              <Text>SKU: {item.item?.item_sku}</Text>
+              <Text>Last Seen: {item.tag.last_seen}</Text>
+              <Text>Status: {item.tag.tracking_status}</Text>
+            </View>
+          )}
+        />
+      )}
+
+      {/* Submit scanned tags for DB verification */}
+      {scannedTags.length > 0 && (
+        <SubmitScanning scannedTags={scannedTags.map(st => ({ tracking_id: st.tag.item_id }))} />
+      )}
     </View>
   );
 }
