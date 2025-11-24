@@ -70,11 +70,42 @@ export default function ScanScreen() {
     }
   };
 
+  // Register new item in backend
+  const handleRegisterNewItem = async () => {
+    if (!editingItem) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/items`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editedValues),
+      });
+
+      const newItem = await res.json();
+
+      // Update local state: attach new item to the tag
+      setScannedTags(prev =>
+        prev.map(st =>
+          st.tag.uuid === editingItem.tag.uuid
+            ? { ...st, item: newItem }
+            : st
+        )
+      );
+
+      setEditingItem(null);
+      setEditedValues({});
+      alert('Item registered successfully ✅');
+    } catch (error) {
+      console.error('Error registering item:', error);
+      alert('Failed to register item ❌');
+    }
+  };
+
   return (
     <View style={globalStyles.container}>
       <Text style={globalStyles.title}>Scan for Devices</Text>
       <Text style={globalStyles.subtitle}>
-        Tap on an item to edit its details.
+        Tap on an item to edit or register it.
       </Text>
 
       {isScanning ? (
@@ -103,8 +134,19 @@ export default function ScanScreen() {
             <Pressable
               onPress={() => {
                 if (item.item) {
+                  // Registered item → edit
                   setEditingItem(item);
                   setEditedValues(item.item);
+                } else {
+                  // Unregistered item → register new
+                  setEditingItem(item);
+                  setEditedValues({
+                    item_name: '',
+                    item_color: '',
+                    item_size: '',
+                    item_quantity: 0,
+                    item_sku: '',
+                  });
                 }
               }}
               style={{ marginBottom: 10, padding: 10, backgroundColor: '#f1f1f1', borderRadius: 8 }}
@@ -128,52 +170,59 @@ export default function ScanScreen() {
         />
       )}
 
-      {/* Edit Modal */}
+      {/* Edit/Register Modal */}
       <Modal visible={!!editingItem} animationType="slide">
         <View style={{ flex: 1, padding: 20 }}>
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Edit Item</Text>
-          {editingItem?.item && (
-            <>
-              <TextInput
-                style={globalStyles.input}
-                value={editedValues.item_name}
-                onChangeText={(text) => setEditedValues({ ...editedValues, item_name: text })}
-                placeholder="Item Name"
-              />
-              <TextInput
-                style={globalStyles.input}
-                value={editedValues.item_color}
-                onChangeText={(text) => setEditedValues({ ...editedValues, item_color: text })}
-                placeholder="Color"
-              />
-              <TextInput
-                style={globalStyles.input}
-                value={editedValues.item_size}
-                onChangeText={(text) => setEditedValues({ ...editedValues, item_size: text })}
-                placeholder="Size"
-              />
-              <TextInput
-                style={globalStyles.input}
-                value={String(editedValues.item_quantity)}
-                onChangeText={(text) => setEditedValues({ ...editedValues, item_quantity: Number(text) })}
-                placeholder="Quantity"
-                keyboardType="numeric"
-              />
-              <TextInput
-                style={globalStyles.input}
-                value={editedValues.item_sku}
-                onChangeText={(text) => setEditedValues({ ...editedValues, item_sku: text })}
-                placeholder="SKU"
-              />
+          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+            {editingItem?.item ? 'Edit Item' : 'Register New Item'}
+          </Text>
 
-              <Pressable style={globalStyles.buttonPrimary} onPress={handleSaveEdit}>
-                <Text style={globalStyles.buttonText}>Save Changes</Text>
-              </Pressable>
-              <Pressable style={globalStyles.buttonSecondary} onPress={() => setEditingItem(null)}>
-                <Text style={globalStyles.buttonText}>Cancel</Text>
-              </Pressable>
-            </>
-          )}
+          {/* Show form fields */}
+          <>
+            <TextInput
+              style={globalStyles.input}
+              value={editedValues.item_name}
+              onChangeText={(text) => setEditedValues({ ...editedValues, item_name: text })}
+              placeholder="Item Name"
+            />
+            <TextInput
+              style={globalStyles.input}
+              value={editedValues.item_color}
+              onChangeText={(text) => setEditedValues({ ...editedValues, item_color: text })}
+              placeholder="Color"
+            />
+            <TextInput
+              style={globalStyles.input}
+              value={editedValues.item_size}
+              onChangeText={(text) => setEditedValues({ ...editedValues, item_size: text })}
+              placeholder="Size"
+            />
+            <TextInput
+              style={globalStyles.input}
+              value={String(editedValues.item_quantity)}
+              onChangeText={(text) => setEditedValues({ ...editedValues, item_quantity: Number(text) })}
+              placeholder="Quantity"
+              keyboardType="numeric"
+            />
+            <TextInput
+              style={globalStyles.input}
+              value={editedValues.item_sku}
+              onChangeText={(text) => setEditedValues({ ...editedValues, item_sku: text })}
+              placeholder="SKU"
+            />
+
+            <Pressable
+              style={globalStyles.buttonPrimary}
+              onPress={editingItem?.item ? handleSaveEdit : handleRegisterNewItem}
+            >
+              <Text style={globalStyles.buttonText}>
+                {editingItem?.item ? 'Save Changes' : 'Register Item'}
+              </Text>
+            </Pressable>
+            <Pressable style={globalStyles.buttonSecondary} onPress={() => setEditingItem(null)}>
+              <Text style={globalStyles.buttonText}>Cancel</Text>
+            </Pressable>
+          </>
         </View>
       </Modal>
 
