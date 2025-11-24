@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, FlatList, TextInput, Modal } from 'react-native';
 import { globalStyles } from '@/styles/globalStyles';
 import SubmitScanning from '@/components/utilities/SubmitScanning';
 import { simulateScan, startScan, ScanResult } from '@/tagSimulator/scanService';
@@ -7,38 +7,33 @@ import { simulateScan, startScan, ScanResult } from '@/tagSimulator/scanService'
 export default function ScanScreen() {
   const [isScanning, setIsScanning] = useState(false);
   const [scannedTags, setScannedTags] = useState<ScanResult[]>([]);
+  const [editingItem, setEditingItem] = useState<ScanResult | null>(null);
+  const [editedValues, setEditedValues] = useState<any>({});
 
-  // Single scan (one-off)
+  // Single scan
   const handleSingleScan = () => {
     setIsScanning(true);
-
     setTimeout(() => {
       const result = simulateScan();
-      if (result.tag) {
-        setScannedTags(prev => {
-          // Avoid duplicates by uuid
-          if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
-          return [...prev, result];
-        });
-      }
+      setScannedTags(prev => {
+        if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
+        return [...prev, result];
+      });
       setIsScanning(false);
       alert('Pretend we found a tag 🎉');
     }, 1500);
   };
 
-  // Continuous scan (looping)
+  // Continuous scan
   const handleStartScan = () => {
     setIsScanning(true);
     const stop = startScan((result) => {
-      if (result.tag) {
-        setScannedTags(prev => {
-          if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
-          return [...prev, result];
-        });
-      }
+      setScannedTags(prev => {
+        if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
+        return [...prev, result];
+      });
     }, 2000);
 
-    // Stop after 10 seconds for demo
     setTimeout(() => {
       stop();
       setIsScanning(false);
@@ -46,11 +41,40 @@ export default function ScanScreen() {
     }, 10000);
   };
 
+  // Save edits to backend
+  const handleSaveEdit = async () => {
+    if (!editingItem?.item) return;
+
+    try {
+      await fetch(`http://localhost:3000/items/${editingItem.item.item_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editedValues),
+      });
+
+      // Update local state
+      setScannedTags(prev =>
+        prev.map(st =>
+          st.tag.uuid === editingItem.tag.uuid
+            ? { ...st, item: { ...st.item, ...editedValues } }
+            : st
+        )
+      );
+
+      setEditingItem(null);
+      setEditedValues({});
+      alert('Item updated successfully ✅');
+    } catch (error) {
+      console.error('Error updating item:', error);
+      alert('Failed to update item ❌');
+    }
+  };
+
   return (
     <View style={globalStyles.container}>
       <Text style={globalStyles.title}>Scan for Devices</Text>
       <Text style={globalStyles.subtitle}>
-        This is a demo screen — scanning is simulated using tagSimulator.
+        Tap on an item to edit its details.
       </Text>
 
       {isScanning ? (
@@ -76,19 +100,82 @@ export default function ScanScreen() {
           data={scannedTags}
           keyExtractor={(item) => item.tag.uuid}
           renderItem={({ item }) => (
-            <View style={{ marginBottom: 10, padding: 10, backgroundColor: '#f1f1f1', borderRadius: 8 }}>
+            <Pressable
+              onPress={() => {
+                if (item.item) {
+                  setEditingItem(item);
+                  setEditedValues(item.item);
+                }
+              }}
+              style={{ marginBottom: 10, padding: 10, backgroundColor: '#f1f1f1', borderRadius: 8 }}
+            >
               <Text style={{ fontWeight: 'bold' }}>UUID: {item.tag.uuid}</Text>
-              <Text>Item: {item.item?.item_name}</Text>
-              <Text>Color: {item.item?.item_color}</Text>
-              <Text>Size: {item.item?.item_size}</Text>
-              <Text>Quantity: {item.item?.item_quantity}</Text>
-              <Text>SKU: {item.item?.item_sku}</Text>
+              {item.item ? (
+                <>
+                  <Text>Item: {item.item.item_name}</Text>
+                  <Text>Color: {item.item.item_color}</Text>
+                  <Text>Size: {item.item.item_size}</Text>
+                  <Text>Quantity: {item.item.item_quantity}</Text>
+                  <Text>SKU: {item.item.item_sku}</Text>
+                </>
+              ) : (
+                <Text style={{ color: 'red', fontStyle: 'italic' }}>Not Registered in Database</Text>
+              )}
               <Text>Last Seen: {item.tag.last_seen}</Text>
               <Text>Status: {item.tag.tracking_status}</Text>
-            </View>
+            </Pressable>
           )}
         />
       )}
+
+      {/* Edit Modal */}
+      <Modal visible={!!editingItem} animationType="slide">
+        <View style={{ flex: 1, padding: 20 }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Edit Item</Text>
+          {editingItem?.item && (
+            <>
+              <TextInput
+                style={globalStyles.input}
+                value={editedValues.item_name}
+                onChangeText={(text) => setEditedValues({ ...editedValues, item_name: text })}
+                placeholder="Item Name"
+              />
+              <TextInput
+                style={globalStyles.input}
+                value={editedValues.item_color}
+                onChangeText={(text) => setEditedValues({ ...editedValues, item_color: text })}
+                placeholder="Color"
+              />
+              <TextInput
+                style={globalStyles.input}
+                value={editedValues.item_size}
+                onChangeText={(text) => setEditedValues({ ...editedValues, item_size: text })}
+                placeholder="Size"
+              />
+              <TextInput
+                style={globalStyles.input}
+                value={String(editedValues.item_quantity)}
+                onChangeText={(text) => setEditedValues({ ...editedValues, item_quantity: Number(text) })}
+                placeholder="Quantity"
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={globalStyles.input}
+                value={editedValues.item_sku}
+                onChangeText={(text) => setEditedValues({ ...editedValues, item_sku: text })}
+                placeholder="SKU"
+              />
+
+              <Pressable style={globalStyles.buttonPrimary} onPress={handleSaveEdit}>
+                <Text style={globalStyles.buttonText}>Save Changes</Text>
+              </Pressable>
+              <Pressable style={globalStyles.buttonSecondary} onPress={() => setEditingItem(null)}>
+                <Text style={globalStyles.buttonText}>Cancel</Text>
+              </Pressable>
+            </>
+          )}
+        </View>
+      </Modal>
 
       {/* Submit scanned tags for DB verification */}
       {scannedTags.length > 0 && (
