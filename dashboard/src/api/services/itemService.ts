@@ -1,4 +1,4 @@
-// src/api/items/index.ts
+// src/api/services/index.ts
 import api from '../index';
 import { Item } from '@/types/item';
 
