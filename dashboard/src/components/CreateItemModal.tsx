@@ -1,8 +1,10 @@
 // src/components/CreateItemModal.tsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Item } from '@/types/item';
 import { createItem } from '../api/services/itemService';
 import { Modal } from './Modal';
+import { CreateItemSchema } from '@/types/schema';
+import z from 'zod';
 
 interface CreateItemModalProps {
   isOpen: boolean;
@@ -18,7 +20,8 @@ export default function CreateItemModal({ isOpen, onClose, onSuccess }: CreateIt
       item_quantity: 0,
       item_sku: '',
     });
-
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  
   // Handle input changes
   // Can be moved into a hook or utility file later along with 
   // the one in EditItemModal
@@ -33,14 +36,24 @@ export default function CreateItemModal({ isOpen, onClose, onSuccess }: CreateIt
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const validatedData = CreateItemSchema.parse(formData);
       await createItem({
-        ...formData,
+        ...validatedData,
         item_id: Math.floor(new Date().getTime() / 1000),
       });
       onSuccess();
       onClose();
     } catch (error) {
-      console.error("Failed to create item:", error);
+        if (error instanceof z.ZodError) {
+            const fieldErrors: Record<string, string> = {};
+            error.issues.forEach((err) => {
+            const path = err.path.join('.');
+            fieldErrors[path] = err.message;
+            });
+            setErrors(fieldErrors);
+      } else {
+        console.error("Failed to create item:", error);
+      }
     }
   };
 
@@ -59,6 +72,7 @@ export default function CreateItemModal({ isOpen, onClose, onSuccess }: CreateIt
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
               />
+            {errors.item_name && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_name}</p>} 
           </div>
 
           <div>
@@ -70,6 +84,7 @@ export default function CreateItemModal({ isOpen, onClose, onSuccess }: CreateIt
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
               />
+            {errors.item_color && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_color}</p>} 
           </div>
 
           <div>
@@ -81,6 +96,7 @@ export default function CreateItemModal({ isOpen, onClose, onSuccess }: CreateIt
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
             />
+            {errors.item_size && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_size}</p>} 
           </div>
 
           <div>
@@ -92,6 +108,7 @@ export default function CreateItemModal({ isOpen, onClose, onSuccess }: CreateIt
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
               />
+            {errors.item_quantity && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_quantity}</p>} 
           </div>
 
           <div>
@@ -103,6 +120,7 @@ export default function CreateItemModal({ isOpen, onClose, onSuccess }: CreateIt
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
               />
+            {errors.item_sku && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_sku}</p>} 
           </div>
 
           <div className="flex justify-end space-x-3">

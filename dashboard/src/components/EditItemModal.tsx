@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { Item } from '@/types/item';
 import { updateItem } from '../api/services/itemService';
 import { Modal } from './Modal';
+import { UpdateItemSchema } from '@/types/schema';
+import z from 'zod';
 
 interface EditItemModalProps {
   isOpen: boolean;
@@ -20,6 +22,7 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
     item_quantity: item.item_quantity,
     item_sku: item.item_sku,
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Update form data when the item prop changes
   useEffect(() => {
@@ -47,11 +50,21 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateItem(item.item_id, {...formData, updated_at: new Date(Date.now())});
+      const validatedData = UpdateItemSchema.parse({...formData, item_id: item.item_id});
+      await updateItem(item.item_id, {...validatedData, updated_at: new Date(Date.now())});
       onSuccess();
       onClose();
     } catch (error) {
-      console.error("Failed to update item:", error);
+        if (error instanceof z.ZodError) {
+            const fieldErrors: Record<string, string> = {};
+            error.issues.forEach((err) => {
+            const path = err.path.join('.');
+            fieldErrors[path] = err.message;
+            });
+            setErrors(fieldErrors);
+      } else {
+        console.error("Failed to create item:", error);
+      }
     }
   };
 
@@ -70,6 +83,7 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
               />
+            {errors.item_name && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_name}</p>} 
           </div>
           <div>
             <label className="block text-sm font-medium">Color</label>
@@ -80,6 +94,7 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
             />
+            {errors.item_color && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_color}</p>} 
           </div>
           <div>
             <label className="block text-sm font-medium">Size</label>
@@ -90,6 +105,7 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
             />
+            {errors.item_size && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_size}</p>} 
           </div>
           <div>
             <label className="block text-sm font-medium">Quantity</label>
@@ -100,6 +116,7 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
               />
+            {errors.item_quantity && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_quantity}</p>} 
           </div>
           <div>
             <label className="block text-sm font-medium">SKU</label>
@@ -110,6 +127,7 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
               />
+            {errors.item_sku && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_sku}</p>} 
           </div>
           <div className="flex justify-end space-x-3">
             <button
