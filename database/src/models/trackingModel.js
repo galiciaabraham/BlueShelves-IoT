@@ -13,12 +13,29 @@ export const TrackingModel = {
 
     async createTracking({tracking_id, item_id, uuid, tracking_status} ) {
         const rows = await sql`
-            INSERT INTO item_tracking (tracking_id, item_id, uuid, last_seen, tracking_status) VALUES (${tracking_id}, ${item_id}, ${uuid}, NOW(), ${tracking_status}) RETURNING *`;
+            INSERT INTO item_tracking (tracking_id, item_id, last_seen, tracking_status) VALUES (${tracking_id}, ${item_id}, NOW(), ${tracking_status}) RETURNING *`;
         return rows[0];
     },
 
-    async updateTracking(id, {tracking_id, item_id, uuid, last_seen, tracking_status}) {
-        const rows = await sql`UPDATE item_tracking SET tracking_id = ${tracking_id}, item_id = ${item_id}, uuid = ${uuid}, last_seen = ${last_seen}, tracking_status = ${tracking_status} WHERE id = ${id} RETURNING *`;
+    async updateTracking(id, {tracking_id, item_id, last_seen, tracking_status}) {
+        const rows = await sql`UPDATE item_tracking SET tracking_id = ${tracking_id}, item_id = ${item_id}, last_seen = ${last_seen}, tracking_status = ${tracking_status} WHERE id = ${id} RETURNING *`;
+        return rows[0];
+    },
+
+    async patchTracking(id, fields) {
+        fields = [];
+        const values = [];
+
+        for (const key in fields) {
+            fields.push(sql`${sql.identifier(key)} = ${fields[key]}`);
+        }
+        
+        if (fields.lenght === 0) {
+            throw new Error('No fields to update');
+        }
+
+        const query = sql`UPDATE item_tracking SET ${sql.join(fields, sql`, `)} WHERE id = ${id} RETURNING *`;
+        const rows = await query;
         return rows[0];
     },
 

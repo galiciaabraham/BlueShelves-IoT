@@ -1,27 +1,30 @@
-// app/context/AuthContext.tsx
-import React, { createContext, useState, useEffect, ReactNode } from "react";
-import { auth } from "../firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import React, { createContext, useContext, useState } from 'react';
 
-interface AuthContextProps {
-  user: any;
-  logout: () => Promise<void>;
-}
- 
-export const AuthContext = createContext<AuthContextProps>({
-  user: null,
-  logout: async () => {},
-});
-
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, setUser);
-    return unsubscribe;
-  }, []);
-
-  const logout = async () => await signOut(auth);
-
-  return <AuthContext.Provider value={{ user, logout }}>{children}</AuthContext.Provider>;
+type AuthContextType = {
+  isLoggedIn: boolean;
+  login: () => void;
+  logout: () => void;
 };
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const login = () => setIsLoggedIn(true);   // ✅ simple simulation
+  const logout = () => setIsLoggedIn(false); // ✅ simple simulation
+
+  return (
+    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}

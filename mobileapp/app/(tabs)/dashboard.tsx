@@ -1,21 +1,20 @@
-// app/(tabs)/dashboard.tsx
-import { View, Text, Button } from "react-native";
-import { auth } from "../firebase";
-import { signOut } from "firebase/auth";
-import { useRouter } from "expo-router";
+import { View, Text, Pressable } from 'react-native';
+import { globalStyles } from '@/styles/globalStyles';
+import { DisplayItems } from '@/components/DisplayItems';
+import { useRouter } from 'expo-router';
 
-export default function Dashboard() {
+export default function DashboardScreen() {
   const router = useRouter();
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    router.replace("/(auth)/login");
-  };
-
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Welcome to your Dashboard!</Text>
-      <Button title="Logout" onPress={handleLogout} />
-    </View>
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.title}>Inventory Dashboard</Text>
+      <View style={globalStyles.separator} />
+      <Pressable onPress={() => router.push('/add-item')}>
+        <Text style={globalStyles.link}>Add New Item</Text>
+      </Pressable>
+
+      {/* Item List */}
+      <DisplayItems/>    
+      </View>
   );
 }
