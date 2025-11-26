@@ -63,7 +63,7 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
             });
             setErrors(fieldErrors);
       } else {
-        console.error("Failed to create item:", error);
+        console.error("Failed to update item:", error);
       }
     }
   };
