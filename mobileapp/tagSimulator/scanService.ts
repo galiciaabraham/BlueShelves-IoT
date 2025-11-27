@@ -1,5 +1,6 @@
 // tagSimulator/scanService.ts
 import { mockTags, MockTag } from './mockTags';
+import { API_BASE_URL } from '@/config'; // ✅ use central config
 
 export type Item = {
   item_id: number;
@@ -21,7 +22,7 @@ export type ScanResult = {
  */
 async function fetchItemById(item_id: number): Promise<Item | undefined> {
   try {
-    const res = await fetch(`http://localhost:3000/items/${item_id}`, {
+    const res = await fetch(`${API_BASE_URL}/items/${item_id}`, {
       headers: { Accept: 'application/json' },
     });
 
