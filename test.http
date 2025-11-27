@@ -1,0 +1,43 @@
+### Get all items
+GET http://localhost:3000/items
+Accept: application/json
+
+### Get single item by ID
+GET http://localhost:3000/items/1
+Accept: application/json
+
+### Register a new item
+POST http://localhost:3000/items
+Content-Type: application/json
+
+{
+  "item_name": "Test Item",
+  "item_color": "Blue",
+  "item_size": "M",
+  "item_quantity": 5,
+  "item_sku": "SKU-123"
+}
+
+### Update an existing item
+PUT http://localhost:3000/items/12
+Content-Type: application/json
+
+{
+  "item_name": "Updated Item",
+  "item_color": "Red",
+  "item_size": "L",
+  "item_quantity": 10,
+  "item_sku": "SKU-999"
+}
+
+### Delete an item (if supported)
+DELETE http://localhost:3000/items/1
+Accept: application/json
+
+### Get all tracking records
+GET http://localhost:3000/trackings
+Accept: application/json
+
+### Get all users
+GET http://localhost:3000/users
+Accept: application/json
