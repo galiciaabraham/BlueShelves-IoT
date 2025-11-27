@@ -24,12 +24,13 @@ export const itemController = {
   },
 
   async createItem(req, res, next) {
+
     try {
-      const { name, description, quantity, sku } = req.body;
-      if (!name || !description || !quantity || !sku) {
+      const { item_name, item_color, item_size, item_quantity, item_sku } = req.body;
+      if (!item_name || !item_color || !item_size || !item_quantity || !item_sku) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
-      const newItem = await ItemModel.createItem({ name, description, quantity, sku });
+      const newItem = await ItemModel.createItem({ item_name, item_color, item_size, item_quantity, item_sku });
       res.status(201).json(newItem);
     } catch (error) {
       next(error);
@@ -38,8 +39,8 @@ export const itemController = {
 
   async updateItem(req, res, next) {
     try {
-      const { name, description, quantity, sku } = req.body;
-      const updated = await ItemModel.updateItem(req.params.id, { name, description, quantity, sku });
+      const { item_name, item_color, item_size, item_quantity, item_sku } = req.body;
+      const updated = await ItemModel.updateItem(req.params.id, { item_name, item_color, item_size, item_quantity, item_sku });
       if (!updated) {
         return res.status(404).json({ error: 'Item not found' });
       }
