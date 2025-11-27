@@ -1,10 +1,19 @@
 // tagSimulator/simulator.ts
 import { mockTags, MockTag } from './mockTags';
-import { mockItems } from '@/mockItems';
+
+export type Item = {
+  item_id: number;
+  item_name: string;
+  item_color: string;
+  item_size: string;
+  item_quantity: number;
+  item_sku: string;
+  updated_at: string;
+};
 
 export type FoundEvent = {
   tag: MockTag;
-  item: typeof mockItems[number] | undefined;
+  item: Item | undefined;
 };
 
 type Options = {
@@ -14,7 +23,6 @@ type Options = {
 };
 
 export class TagSimulator {
-  // ✅ Fixed type: works in Node + React Native
   private timer?: ReturnType<typeof setInterval>;
   private listeners: Array<(ev: FoundEvent) => void> = [];
   private index = 0;
@@ -43,17 +51,31 @@ export class TagSimulator {
   }
 
   // Internal tick — simulate discovery
-  private tick() {
+  private async tick() {
     const tags = this.pickTags(this.options.burstSize ?? 1);
-    tags.forEach(tag => {
+    for (const tag of tags) {
       tag.last_seen = new Date().toISOString();
-      tag.tracking_status = 'active';
+      if (tag.item_id !== 0) {
+        tag.tracking_status = 'active';
+      }
 
-      const item = mockItems.find(i => i.item_id === tag.item_id);
+      let item: Item | undefined;
+      if (tag.item_id !== 0) {
+        try {
+          const res = await fetch(`http://localhost:3000/items/${tag.item_id}`, {
+            headers: { Accept: 'application/json' },
+          });
+          if (res.ok) {
+            item = await res.json();
+          }
+        } catch (err) {
+          console.error('Error fetching item:', err);
+        }
+      }
 
       const event: FoundEvent = { tag, item };
       this.listeners.forEach(l => l(event));
-    });
+    }
   }
 
   // Pick tags either randomly or sequentially
