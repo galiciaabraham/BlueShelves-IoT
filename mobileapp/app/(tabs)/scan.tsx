@@ -1,114 +1,91 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator, FlatList, TextInput, Modal } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, FlatList } from 'react-native';
 import { globalStyles } from '@/styles/globalStyles';
 import SubmitScanning from '@/components/utilities/SubmitScanning';
-import { simulateScan, startScan, ScanResult } from '@/tagSimulator/scanService';
+import { simulateScan } from '@/tagSimulator/scanService';
 
 export default function ScanScreen() {
   const [isScanning, setIsScanning] = useState(false);
-  const [scannedTags, setScannedTags] = useState<ScanResult[]>([]);
-  const [editingItem, setEditingItem] = useState<ScanResult | null>(null);
-  const [editedValues, setEditedValues] = useState<any>({});
+  const [scannedTags, setScannedTags] = useState<any[]>([]);
+  const [showSubmitButtons, setShowSubmitButtons] = useState(false);
 
   const API_URL = 'https://blueshelves-iot.onrender.com';
 
-  // Single scan
+  // Helper to fetch tracking + item
+  const fetchTracking = async (tracking_id: number) => {
+    try {
+      const trackRes = await fetch(`${API_URL}/trackings/${tracking_id}`);
+    
+    if (!trackRes.ok) {
+      // Tracking not found, unknown item
+      return {
+        tracking_id,
+        item: null,
+        tracking_status: 'unknown',
+        last_seen: null,
+      };
+    }
+
+    const trackData = await trackRes.json(); // { tracking_id, item_id, last_seen, tracking_status }
+
+    // Fetch the item only if item_id exists
+    let itemData = null;
+    if (trackData.item_id) {
+      const itemRes = await fetch(`${API_URL}/items/${trackData.item_id}`);
+      if (itemRes.ok) itemData = await itemRes.json();
+    }
+
+    return {
+      tracking_id: trackData.tracking_id,
+      tracking_status: trackData.tracking_status,
+      last_seen: trackData.last_seen,
+      item: itemData,
+    };
+  } catch (error) {
+    console.error('Error fetching tracking:', error);
+    return {
+      tracking_id,
+      item: null,
+      tracking_status: 'unknown',
+      last_seen: null,
+      }
+    }
+  };
+
+  // Single Scan
   const handleSingleScan = async () => {
     setIsScanning(true);
-    setTimeout(async () => {
-      const result = await simulateScan();
+    setShowSubmitButtons(false);
 
-      const trackRes = await fetch(`${API_URL}/trackings/${result.tracking_id}`);
-      const trackData = await trackRes.json();
+    const result = await simulateScan();
+    const trackingData = await fetchTracking(result.tracking_id);
 
-      setScannedTags(prev => [...prev, trackData]);
-      setIsScanning(false);
-
-      alert('Pretend we found a tag 🎉');
-    }, 1500);
+    setScannedTags([trackingData]);
+    setIsScanning(false);
+    setShowSubmitButtons(true);
   };
 
-  // Continuous scan
-  const handleStartScan = () => {
+  // Continuous Scan
+  const handleContinuousScan = async () => {
     setIsScanning(true);
+    setShowSubmitButtons(false);
 
-    const stop = startScan(async (result) => {
-      const trackRes = await fetch(`${API_URL}/trackings/${result.tracking_id}`);
-      const trackData = await trackRes.json();
-      setScannedTags(prev => [...prev, trackData]);
-    }, 2000);
-
-    setTimeout(() => {
-      stop();
-      setIsScanning(false);
-      alert('Finished simulated continuous scan 🎉');
-    }, 10000);
-  };
-
-  // Save edits to backend
-  const handleSaveEdit = async () => {
-    if (!editingItem?.item) return;
-
-    try {
-      await fetch(`${API_URL}/items/${editingItem.item.item_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editedValues),
-      });
-
-      setScannedTags(prev =>
-        prev.map(st =>
-          st.tag.tracking_id === editingItem.tag.tracking_id
-            ? { ...st, item: { ...st.item, ...editedValues } }
-            : st
-        )
-      );
-
-      setEditingItem(null);
-      setEditedValues({});
-      alert('Item updated successfully ✅');
-    } catch (error) {
-      console.error('Error updating item:', error);
-      alert('Failed to update item ❌');
+    const results: any[] = [];
+    for (let i = 0; i < 8; i++) {
+      const result = await simulateScan();
+      const trackingData = await fetchTracking(result.tracking_id);
+      results.push(trackingData);
     }
-  };
 
-  // Register new item
-  const handleRegisterNewItem = async () => {
-    if (!editingItem) return;
-
-    try {
-      const res = await fetch(`${API_URL}/items`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editedValues),
-      });
-
-      const newItem = await res.json();
-
-      setScannedTags(prev =>
-        prev.map(st =>
-          st.tag.tracking_id === editingItem.tag.tracking_id
-            ? { ...st, item: newItem }
-            : st
-        )
-      );
-
-      setEditingItem(null);
-      setEditedValues({});
-      alert('Item registered successfully ✅');
-    } catch (error) {
-      console.error('Error registering item:', error);
-      alert('Failed to register item ❌');
-    }
+    setScannedTags(results);
+    setIsScanning(false);
+    setShowSubmitButtons(true);
   };
 
   return (
     <View style={globalStyles.container}>
       <Text style={globalStyles.title}>Scan for Devices</Text>
-      <Text style={globalStyles.subtitle}>
-        Tap on an item to edit or register it.
-      </Text>
+      <Text style={globalStyles.subtitle}>Tap on a card to see details</Text>
 
       {isScanning ? (
         <View style={{ marginTop: 20 }}>
@@ -121,29 +98,20 @@ export default function ScanScreen() {
             <Text style={globalStyles.buttonText}>Single Scan</Text>
           </Pressable>
 
-          <Pressable style={globalStyles.buttonPrimary} onPress={handleStartScan}>
+          <Pressable style={globalStyles.buttonPrimary} onPress={handleContinuousScan}>
             <Text style={globalStyles.buttonText}>Continuous Scan</Text>
           </Pressable>
         </View>
       )}
 
+      {/* Display Scanned Tags */}
       {scannedTags.length > 0 && (
         <FlatList
           style={{ marginTop: 20 }}
           data={scannedTags}
-          keyExtractor={(item) => String(item.tag.tracking_id)}
+          keyExtractor={(item) => String(item.tracking_id)}
           renderItem={({ item }) => (
-            <Pressable
-              onPress={() => {
-                setEditingItem(item);
-                setEditedValues(item.item ?? {
-                  item_name: '',
-                  item_color: '',
-                  item_size: '',
-                  item_quantity: 0,
-                  item_sku: '',
-                });
-              }}
+            <View
               style={{
                 marginBottom: 10,
                 padding: 10,
@@ -151,10 +119,7 @@ export default function ScanScreen() {
                 borderRadius: 8,
               }}
             >
-              <Text style={{ fontWeight: 'bold' }}>
-                Tracking ID: {item.tag.tracking_id}
-              </Text>
-
+              <Text style={{ fontWeight: 'bold' }}>Tracking ID: {item.tracking_id}</Text>
               {item.item ? (
                 <>
                   <Text>Item: {item.item.item_name}</Text>
@@ -164,89 +129,23 @@ export default function ScanScreen() {
                   <Text>SKU: {item.item.item_sku}</Text>
                 </>
               ) : (
-                <Text style={{ color: 'red', fontStyle: 'italic' }}>
-                  Not Registered in Database
-                </Text>
+                <Text style={{ color: 'red', fontStyle: 'italic' }}>Unknown Item</Text>
               )}
-
-              <Text>Last Seen: {item.tag.last_seen}</Text>
-              <Text>Status: {item.tag.tracking_status}</Text>
-            </Pressable>
+              <Text>Last Seen: {item.last_seen ?? 'N/A'}</Text>
+              <Text>Status: {item.tracking_status}</Text>
+            </View>
           )}
         />
       )}
 
-      {/* Edit/Register Modal */}
-      <Modal visible={!!editingItem} animationType="slide">
-        <View style={{ flex: 1, padding: 20 }}>
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-            {editingItem?.item ? 'Edit Item' : 'Register New Item'}
-          </Text>
-
-          <TextInput
-            style={globalStyles.input}
-            value={editedValues.item_name}
-            onChangeText={(text) => setEditedValues({ ...editedValues, item_name: text })}
-            placeholder="Item Name"
-          />
-
-          <TextInput
-            style={globalStyles.input}
-            value={editedValues.item_color}
-            onChangeText={(text) => setEditedValues({ ...editedValues, item_color: text })}
-            placeholder="Color"
-          />
-
-          <TextInput
-            style={globalStyles.input}
-            value={editedValues.item_size}
-            onChangeText={(text) => setEditedValues({ ...editedValues, item_size: text })}
-            placeholder="Size"
-          />
-
-          <TextInput
-            style={globalStyles.input}
-            value={String(editedValues.item_quantity)}
-            onChangeText={(text) =>
-              setEditedValues({ ...editedValues, item_quantity: Number(text) })
-            }
-            placeholder="Quantity"
-            keyboardType="numeric"
-          />
-
-          <TextInput
-            style={globalStyles.input}
-            value={editedValues.item_sku}
-            onChangeText={(text) => setEditedValues({ ...editedValues, item_sku: text })}
-            placeholder="SKU"
-          />
-
-          <Pressable
-            style={globalStyles.buttonPrimary}
-            onPress={editingItem?.item ? handleSaveEdit : handleRegisterNewItem}
-          >
-            <Text style={globalStyles.buttonText}>
-              {editingItem?.item ? 'Save Changes' : 'Register Item'}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={globalStyles.buttonSecondary}
-            onPress={() => setEditingItem(null)}
-          >
-            <Text style={globalStyles.buttonText}>Cancel</Text>
-          </Pressable>
-        </View>
-      </Modal>
-
-      {/* Submit Scanning */}
-      {scannedTags.length > 0 && (
+      {/* SubmitScanning Buttons */}
+      {showSubmitButtons && scannedTags.length > 0 && (
         <SubmitScanning
-          scannedTags={scannedTags.map(st => ({
+          scannedTags={scannedTags.map((st) => ({
             item_id: st.item?.item_id ?? 0,
-            tracking_id: st.tag.tracking_id,
-            tracking_status: st.tag.tracking_status,
-            last_seen: st.tag.last_seen,
+            tracking_id: st.tracking_id,
+            tracking_status: st.tracking_status,
+            last_seen: st.last_seen,
           }))}
         />
       )}
