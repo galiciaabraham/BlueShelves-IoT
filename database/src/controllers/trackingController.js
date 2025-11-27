@@ -71,4 +71,21 @@ export const trackingController = {
       next(error);
     }
   },
+
+  async bulkUpdateTrackings(req, res, next) {
+    try {
+    const trackingList = req.body;
+
+    if (!Array.isArray(trackingList)) {
+      return res.status(400).json({ error: "Expected an array of tracking entries" });
+    }
+
+    const updated = await TrackingModel.upsertTrackingList(trackingList);
+    return res.status(200).json(updated);
+
+  } catch (error) {
+    console.error("Error in /trackings/bulk:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+  },
 };

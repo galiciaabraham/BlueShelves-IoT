@@ -3,7 +3,6 @@ import { View, Text, Pressable, ActivityIndicator, FlatList, TextInput, Modal } 
 import { globalStyles } from '@/styles/globalStyles';
 import SubmitScanning from '@/components/utilities/SubmitScanning';
 import { simulateScan, startScan, ScanResult } from '@/tagSimulator/scanService';
-import { API_BASE_URL } from '@/config' // ✅ use environment-aware base URL
 
 export default function ScanScreen() {
   const [isScanning, setIsScanning] = useState(false);
@@ -11,16 +10,20 @@ export default function ScanScreen() {
   const [editingItem, setEditingItem] = useState<ScanResult | null>(null);
   const [editedValues, setEditedValues] = useState<any>({});
 
+  const API_URL = 'https://blueshelves-iot.onrender.com';
+
   // Single scan
   const handleSingleScan = async () => {
     setIsScanning(true);
     setTimeout(async () => {
       const result = await simulateScan();
-      setScannedTags(prev => {
-        if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
-        return [...prev, result];
-      });
+
+      const trackRes = await fetch(`${API_URL}/trackings/${result.tracking_id}`);
+      const trackData = await trackRes.json();
+
+      setScannedTags(prev => [...prev, trackData]);
       setIsScanning(false);
+
       alert('Pretend we found a tag 🎉');
     }, 1500);
   };
@@ -28,11 +31,11 @@ export default function ScanScreen() {
   // Continuous scan
   const handleStartScan = () => {
     setIsScanning(true);
+
     const stop = startScan(async (result) => {
-      setScannedTags(prev => {
-        if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
-        return [...prev, result];
-      });
+      const trackRes = await fetch(`${API_URL}/trackings/${result.tracking_id}`);
+      const trackData = await trackRes.json();
+      setScannedTags(prev => [...prev, trackData]);
     }, 2000);
 
     setTimeout(() => {
@@ -47,7 +50,7 @@ export default function ScanScreen() {
     if (!editingItem?.item) return;
 
     try {
-      await fetch(`${API_BASE_URL}/items/${editingItem.item.item_id}`, {
+      await fetch(`${API_URL}/items/${editingItem.item.item_id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editedValues),
@@ -55,7 +58,7 @@ export default function ScanScreen() {
 
       setScannedTags(prev =>
         prev.map(st =>
-          st.tag.uuid === editingItem.tag.uuid
+          st.tag.tracking_id === editingItem.tag.tracking_id
             ? { ...st, item: { ...st.item, ...editedValues } }
             : st
         )
@@ -70,12 +73,12 @@ export default function ScanScreen() {
     }
   };
 
-  // Register new item in backend
+  // Register new item
   const handleRegisterNewItem = async () => {
     if (!editingItem) return;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/items`, {
+      const res = await fetch(`${API_URL}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editedValues),
@@ -85,7 +88,7 @@ export default function ScanScreen() {
 
       setScannedTags(prev =>
         prev.map(st =>
-          st.tag.uuid === editingItem.tag.uuid
+          st.tag.tracking_id === editingItem.tag.tracking_id
             ? { ...st, item: newItem }
             : st
         )
@@ -117,6 +120,7 @@ export default function ScanScreen() {
           <Pressable style={globalStyles.buttonSecondary} onPress={handleSingleScan}>
             <Text style={globalStyles.buttonText}>Single Scan</Text>
           </Pressable>
+
           <Pressable style={globalStyles.buttonPrimary} onPress={handleStartScan}>
             <Text style={globalStyles.buttonText}>Continuous Scan</Text>
           </Pressable>
@@ -127,27 +131,30 @@ export default function ScanScreen() {
         <FlatList
           style={{ marginTop: 20 }}
           data={scannedTags}
-          keyExtractor={(item) => item.tag.uuid}
+          keyExtractor={(item) => String(item.tag.tracking_id)}
           renderItem={({ item }) => (
             <Pressable
               onPress={() => {
-                if (item.item) {
-                  setEditingItem(item);
-                  setEditedValues(item.item);
-                } else {
-                  setEditingItem(item);
-                  setEditedValues({
-                    item_name: '',
-                    item_color: '',
-                    item_size: '',
-                    item_quantity: 0,
-                    item_sku: '',
-                  });
-                }
+                setEditingItem(item);
+                setEditedValues(item.item ?? {
+                  item_name: '',
+                  item_color: '',
+                  item_size: '',
+                  item_quantity: 0,
+                  item_sku: '',
+                });
               }}
-              style={{ marginBottom: 10, padding: 10, backgroundColor: '#f1f1f1', borderRadius: 8 }}
+              style={{
+                marginBottom: 10,
+                padding: 10,
+                backgroundColor: '#f1f1f1',
+                borderRadius: 8,
+              }}
             >
-              <Text style={{ fontWeight: 'bold' }}>UUID: {item.tag.uuid}</Text>
+              <Text style={{ fontWeight: 'bold' }}>
+                Tracking ID: {item.tag.tracking_id}
+              </Text>
+
               {item.item ? (
                 <>
                   <Text>Item: {item.item.item_name}</Text>
@@ -157,8 +164,11 @@ export default function ScanScreen() {
                   <Text>SKU: {item.item.item_sku}</Text>
                 </>
               ) : (
-                <Text style={{ color: 'red', fontStyle: 'italic' }}>Not Registered in Database</Text>
+                <Text style={{ color: 'red', fontStyle: 'italic' }}>
+                  Not Registered in Database
+                </Text>
               )}
+
               <Text>Last Seen: {item.tag.last_seen}</Text>
               <Text>Status: {item.tag.tracking_status}</Text>
             </Pressable>
@@ -166,6 +176,7 @@ export default function ScanScreen() {
         />
       )}
 
+      {/* Edit/Register Modal */}
       <Modal visible={!!editingItem} animationType="slide">
         <View style={{ flex: 1, padding: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
@@ -178,25 +189,31 @@ export default function ScanScreen() {
             onChangeText={(text) => setEditedValues({ ...editedValues, item_name: text })}
             placeholder="Item Name"
           />
+
           <TextInput
             style={globalStyles.input}
             value={editedValues.item_color}
             onChangeText={(text) => setEditedValues({ ...editedValues, item_color: text })}
             placeholder="Color"
           />
+
           <TextInput
             style={globalStyles.input}
             value={editedValues.item_size}
             onChangeText={(text) => setEditedValues({ ...editedValues, item_size: text })}
             placeholder="Size"
           />
+
           <TextInput
             style={globalStyles.input}
             value={String(editedValues.item_quantity)}
-            onChangeText={(text) => setEditedValues({ ...editedValues, item_quantity: Number(text) })}
+            onChangeText={(text) =>
+              setEditedValues({ ...editedValues, item_quantity: Number(text) })
+            }
             placeholder="Quantity"
             keyboardType="numeric"
           />
+
           <TextInput
             style={globalStyles.input}
             value={editedValues.item_sku}
@@ -212,17 +229,22 @@ export default function ScanScreen() {
               {editingItem?.item ? 'Save Changes' : 'Register Item'}
             </Text>
           </Pressable>
-          <Pressable style={globalStyles.buttonSecondary} onPress={() => setEditingItem(null)}>
+
+          <Pressable
+            style={globalStyles.buttonSecondary}
+            onPress={() => setEditingItem(null)}
+          >
             <Text style={globalStyles.buttonText}>Cancel</Text>
           </Pressable>
         </View>
       </Modal>
 
+      {/* Submit Scanning */}
       {scannedTags.length > 0 && (
         <SubmitScanning
           scannedTags={scannedTags.map(st => ({
             item_id: st.item?.item_id ?? 0,
-            uuid: st.tag.uuid,
+            tracking_id: st.tag.tracking_id,
             tracking_status: st.tag.tracking_status,
             last_seen: st.tag.last_seen,
           }))}

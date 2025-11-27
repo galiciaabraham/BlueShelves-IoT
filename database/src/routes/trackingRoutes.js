@@ -12,6 +12,8 @@ router.post('/', trackingController.createTracking);
 router.put('/:id', trackingController.updateTracking);
 //Patch tracking
 router.put('/patch/:id', trackingController.patchTracking); 
+//Bulk update trackings
+router.post('/bulk', trackingController.bulkUpdateTrackings);
 // Delete tracking
 router.delete('/:id', trackingController.deleteTracking);
 
