@@ -1,13 +1,13 @@
 ### Get all items
-GET http://localhost:3000/items
+GET https://blueshelves-iot.onrender.com/items
 Accept: application/json
 
 ### Get single item by ID
-GET http://localhost:3000/items/1
+GET https://blueshelves-iot.onrender.com/items/1
 Accept: application/json
 
 ### Register a new item
-POST http://localhost:3000/items
+POST https://blueshelves-iot.onrender.com/items
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 ### Update an existing item
-PUT http://localhost:3000/items/12
+PUT https://blueshelves-iot.onrender.com/items/12
 Content-Type: application/json
 
 {
@@ -31,13 +31,13 @@ Content-Type: application/json
 }
 
 ### Delete an item (if supported)
-DELETE http://localhost:3000/items/1
+DELETE https://blueshelves-iot.onrender.com/items/1
 Accept: application/json
 
 ### Get all tracking records
-GET http://localhost:3000/trackings
+GET https://blueshelves-iot.onrender.com/trackings
 Accept: application/json
 
 ### Get all users
-GET http://localhost:3000/users
+GET https://blueshelves-iot.onrender.com/users
 Accept: application/json

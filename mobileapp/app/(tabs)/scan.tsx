@@ -3,6 +3,7 @@ import { View, Text, Pressable, ActivityIndicator, FlatList, TextInput, Modal } 
 import { globalStyles } from '@/styles/globalStyles';
 import SubmitScanning from '@/components/utilities/SubmitScanning';
 import { simulateScan, startScan, ScanResult } from '@/tagSimulator/scanService';
+import { API_BASE_URL } from '@/config' // ✅ use environment-aware base URL
 
 export default function ScanScreen() {
   const [isScanning, setIsScanning] = useState(false);
@@ -11,10 +12,10 @@ export default function ScanScreen() {
   const [editedValues, setEditedValues] = useState<any>({});
 
   // Single scan
-  const handleSingleScan = () => {
+  const handleSingleScan = async () => {
     setIsScanning(true);
-    setTimeout(() => {
-      const result = simulateScan();
+    setTimeout(async () => {
+      const result = await simulateScan();
       setScannedTags(prev => {
         if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
         return [...prev, result];
@@ -27,7 +28,7 @@ export default function ScanScreen() {
   // Continuous scan
   const handleStartScan = () => {
     setIsScanning(true);
-    const stop = startScan((result) => {
+    const stop = startScan(async (result) => {
       setScannedTags(prev => {
         if (prev.find(t => t.tag.uuid === result.tag.uuid)) return prev;
         return [...prev, result];
@@ -46,13 +47,12 @@ export default function ScanScreen() {
     if (!editingItem?.item) return;
 
     try {
-      await fetch(`http://localhost:3000/items/${editingItem.item.item_id}`, {
+      await fetch(`${API_BASE_URL}/items/${editingItem.item.item_id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editedValues),
       });
 
-      // Update local state
       setScannedTags(prev =>
         prev.map(st =>
           st.tag.uuid === editingItem.tag.uuid
@@ -75,7 +75,7 @@ export default function ScanScreen() {
     if (!editingItem) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/items`, {
+      const res = await fetch(`${API_BASE_URL}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editedValues),
@@ -83,7 +83,6 @@ export default function ScanScreen() {
 
       const newItem = await res.json();
 
-      // Update local state: attach new item to the tag
       setScannedTags(prev =>
         prev.map(st =>
           st.tag.uuid === editingItem.tag.uuid
@@ -124,7 +123,6 @@ export default function ScanScreen() {
         </View>
       )}
 
-      {/* Dynamic list of scanned items */}
       {scannedTags.length > 0 && (
         <FlatList
           style={{ marginTop: 20 }}
@@ -134,11 +132,9 @@ export default function ScanScreen() {
             <Pressable
               onPress={() => {
                 if (item.item) {
-                  // Registered item → edit
                   setEditingItem(item);
                   setEditedValues(item.item);
                 } else {
-                  // Unregistered item → register new
                   setEditingItem(item);
                   setEditedValues({
                     item_name: '',
@@ -170,65 +166,67 @@ export default function ScanScreen() {
         />
       )}
 
-      {/* Edit/Register Modal */}
       <Modal visible={!!editingItem} animationType="slide">
         <View style={{ flex: 1, padding: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
             {editingItem?.item ? 'Edit Item' : 'Register New Item'}
           </Text>
 
-          {/* Show form fields */}
-          <>
-            <TextInput
-              style={globalStyles.input}
-              value={editedValues.item_name}
-              onChangeText={(text) => setEditedValues({ ...editedValues, item_name: text })}
-              placeholder="Item Name"
-            />
-            <TextInput
-              style={globalStyles.input}
-              value={editedValues.item_color}
-              onChangeText={(text) => setEditedValues({ ...editedValues, item_color: text })}
-              placeholder="Color"
-            />
-            <TextInput
-              style={globalStyles.input}
-              value={editedValues.item_size}
-              onChangeText={(text) => setEditedValues({ ...editedValues, item_size: text })}
-              placeholder="Size"
-            />
-            <TextInput
-              style={globalStyles.input}
-              value={String(editedValues.item_quantity)}
-              onChangeText={(text) => setEditedValues({ ...editedValues, item_quantity: Number(text) })}
-              placeholder="Quantity"
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={globalStyles.input}
-              value={editedValues.item_sku}
-              onChangeText={(text) => setEditedValues({ ...editedValues, item_sku: text })}
-              placeholder="SKU"
-            />
+          <TextInput
+            style={globalStyles.input}
+            value={editedValues.item_name}
+            onChangeText={(text) => setEditedValues({ ...editedValues, item_name: text })}
+            placeholder="Item Name"
+          />
+          <TextInput
+            style={globalStyles.input}
+            value={editedValues.item_color}
+            onChangeText={(text) => setEditedValues({ ...editedValues, item_color: text })}
+            placeholder="Color"
+          />
+          <TextInput
+            style={globalStyles.input}
+            value={editedValues.item_size}
+            onChangeText={(text) => setEditedValues({ ...editedValues, item_size: text })}
+            placeholder="Size"
+          />
+          <TextInput
+            style={globalStyles.input}
+            value={String(editedValues.item_quantity)}
+            onChangeText={(text) => setEditedValues({ ...editedValues, item_quantity: Number(text) })}
+            placeholder="Quantity"
+            keyboardType="numeric"
+          />
+          <TextInput
+            style={globalStyles.input}
+            value={editedValues.item_sku}
+            onChangeText={(text) => setEditedValues({ ...editedValues, item_sku: text })}
+            placeholder="SKU"
+          />
 
-            <Pressable
-              style={globalStyles.buttonPrimary}
-              onPress={editingItem?.item ? handleSaveEdit : handleRegisterNewItem}
-            >
-              <Text style={globalStyles.buttonText}>
-                {editingItem?.item ? 'Save Changes' : 'Register Item'}
-              </Text>
-            </Pressable>
-            <Pressable style={globalStyles.buttonSecondary} onPress={() => setEditingItem(null)}>
-              <Text style={globalStyles.buttonText}>Cancel</Text>
-            </Pressable>
-          </>
+          <Pressable
+            style={globalStyles.buttonPrimary}
+            onPress={editingItem?.item ? handleSaveEdit : handleRegisterNewItem}
+          >
+            <Text style={globalStyles.buttonText}>
+              {editingItem?.item ? 'Save Changes' : 'Register Item'}
+            </Text>
+          </Pressable>
+          <Pressable style={globalStyles.buttonSecondary} onPress={() => setEditingItem(null)}>
+            <Text style={globalStyles.buttonText}>Cancel</Text>
+          </Pressable>
         </View>
       </Modal>
 
-      {/* Submit scanned tags for DB verification */}
       {scannedTags.length > 0 && (
-        <SubmitScanning scannedTags={scannedTags.map(st => ({ tracking_id: st.tag.item_id }))} />
+        <SubmitScanning
+          scannedTags={scannedTags.map(st => ({
+            item_id: st.item?.item_id ?? 0,
+            uuid: st.tag.uuid,
+            tracking_status: st.tag.tracking_status,
+            last_seen: st.tag.last_seen,
+          }))}
+        />
       )}
     </View>
   );

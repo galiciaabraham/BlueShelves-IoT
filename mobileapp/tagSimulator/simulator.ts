@@ -1,5 +1,6 @@
 // tagSimulator/simulator.ts
 import { mockTags, MockTag } from './mockTags';
+import { API_BASE_URL } from '@/config'; // ✅ use central config
 
 export type Item = {
   item_id: number;
@@ -62,7 +63,7 @@ export class TagSimulator {
       let item: Item | undefined;
       if (tag.item_id !== 0) {
         try {
-          const res = await fetch(`http://localhost:3000/items/${tag.item_id}`, {
+          const res = await fetch(`${API_BASE_URL}/items/${tag.item_id}`, {
             headers: { Accept: 'application/json' },
           });
           if (res.ok) {
