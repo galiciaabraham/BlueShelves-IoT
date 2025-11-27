@@ -14,8 +14,8 @@ export type Item = {
 
 export type ScanResult = {
   tag: MockTag;
-  item: Item | undefined; // undefined if unregistered
-};
+  item?: Item;
+  tracking_id: number;};
 
 /**
  * Fetch item details from live API
@@ -41,22 +41,12 @@ async function fetchItemById(item_id: number): Promise<Item | undefined> {
  * Simulates a single scan event.
  * Picks a random tag, updates its last_seen, and resolves the linked item via API.
  */
-export async function simulateScan(): Promise<ScanResult> {
+export async function simulateScan() {
   // Pick a random tag
   const tag = mockTags[Math.floor(Math.random() * mockTags.length)];
 
-  // Update last_seen
-  tag.last_seen = new Date().toISOString();
-
-  // Registered tags → set active, unregistered stay lost
-  if (tag.item_id !== 0) {
-    tag.tracking_status = 'active';
-  }
-
-  // Fetch item from API (undefined if unregistered or not found)
-  const item = tag.item_id !== 0 ? await fetchItemById(tag.item_id) : undefined;
-
-  return { tag, item };
+  // Return the tracking_id
+  return { tracking_id: tag.tracking_id };
 }
 
 /**
@@ -64,7 +54,7 @@ export async function simulateScan(): Promise<ScanResult> {
  * Calls the callback every interval with a new ScanResult.
  */
 export function startScan(
-  callback: (result: ScanResult) => void,
+  callback: (result: { tracking_id: number }) => void,
   intervalMs: number = 2000
 ): () => void {
   const timer = setInterval(async () => {
