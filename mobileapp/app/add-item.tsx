@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { createItem } from '@/components/services/inventoryService';
 import { globalStyles } from '@/styles/globalStyles';
+import { validateItemFields } from '@/components/utilities/validateItem';
 
 export default function AddItemScreen() {
   const router = useRouter();
@@ -14,8 +15,16 @@ export default function AddItemScreen() {
   const [item_sku, setSku] = useState('');
 
   async function handleSubmit() {
-    if (!item_name || !item_sku || !item_quantity || !item_color || !item_size) {
-      Alert.alert("Missing fields", "Name, SKU, Quantity, Color, and Size are required");
+    const error = validateItemFields({
+      item_name,
+      item_color,
+      item_size,
+      item_quantity,
+      item_sku,
+    });
+
+    if (error) {
+      Alert.alert("Invalid Input", error);
       return;
     }
 
@@ -29,7 +38,7 @@ export default function AddItemScreen() {
       });
 
       Alert.alert("Success", "Item added successfully!");
-      router.back(); // Go back to Dashboard
+      router.back();
     } catch (err) {
       Alert.alert("Error", "Failed to add item");
     }
@@ -75,7 +84,9 @@ export default function AddItemScreen() {
         onChangeText={setSku}
       />
 
-      <Button title="Add Item" onPress={handleSubmit} />
+      <Pressable style={globalStyles.buttonPrimary} onPress={handleSubmit}>
+        <Text style={globalStyles.buttonText}>Add Item</Text>
+      </Pressable>
     </View>
   );
 }
