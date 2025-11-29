@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { createItem } from '@/components/services/inventoryService';
 import { globalStyles } from '@/styles/globalStyles';
@@ -45,48 +45,63 @@ export default function AddItemScreen() {
   }
 
   return (
-    <View style={globalStyles.container}>
-      <Text style={globalStyles.title}>Add New Item</Text>
+     <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={80}  // adjust based on header height
+    >
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={globalStyles.container}>
+          <Text style={globalStyles.title}>Add New Item</Text>
 
-      <TextInput
-        placeholder="Name"
-        style={globalStyles.input}
-        value={item_name}
-        onChangeText={setName}
-      />
+          <TextInput
+            placeholder="Name"
+            style={globalStyles.input}
+            value={item_name}
+            onChangeText={setName}
+          />
 
-      <TextInput
-        placeholder="Color"
-        style={globalStyles.input}
-        value={item_color}
-        onChangeText={setColor}
-      />
+          <TextInput
+            placeholder="Color"
+            style={globalStyles.input}
+            value={item_color}
+            onChangeText={setColor}
+          />
 
-      <TextInput
-        placeholder="Size"
-        style={globalStyles.input}
-        value={item_size}
-        onChangeText={setSize}
-      />
+          <TextInput
+            placeholder="Size"
+            style={globalStyles.input}
+            value={item_size}
+            onChangeText={setSize}
+          />
 
-      <TextInput
-        placeholder="Quantity"
-        keyboardType="numeric"
-        style={globalStyles.input}
-        value={item_quantity}
-        onChangeText={setQuantity}
-      />
+          <TextInput
+            placeholder="Quantity"
+            keyboardType="numeric"
+            style={globalStyles.input}
+            value={item_quantity}
+            onChangeText={setQuantity}
+          />
 
-      <TextInput
-        placeholder="SKU"
-        style={globalStyles.input}
-        value={item_sku}
-        onChangeText={setSku}
-      />
+          <TextInput
+            placeholder="SKU"
+            style={globalStyles.input}
+            value={item_sku}
+            onChangeText={setSku}
+          />
 
-      <Pressable style={globalStyles.buttonPrimary} onPress={handleSubmit}>
-        <Text style={globalStyles.buttonText}>Add Item</Text>
-      </Pressable>
-    </View>
+          <Pressable 
+            style={globalStyles.buttonPrimary} 
+            onPress={handleSubmit}
+          >
+            <Text style={globalStyles.buttonText}>Add Item</Text>
+          </Pressable>
+
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

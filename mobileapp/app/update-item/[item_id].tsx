@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, Alert, Pressable } from "react-native";
+import { View, Text, TextInput, Alert, Pressable, KeyboardAvoidingView, Platform, ScrollView} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { updateItem, deleteItem } from "@/components/services/inventoryService";
 import { globalStyles } from "@/styles/globalStyles";
@@ -12,7 +12,6 @@ export default function UpdateItemScreen() {
   const { item_id } = useLocalSearchParams();
 
   const [loading, setLoading] = useState(true);
-
   const [item_name, setName] = useState("");
   const [item_color, setColor] = useState("");
   const [item_size, setSize] = useState("");
@@ -99,6 +98,15 @@ export default function UpdateItemScreen() {
   if (loading) return <Text>Loading...</Text>;
 
   return (
+    <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={80}  // adjust based on header height
+        >
+          <ScrollView 
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+          >
     <View style={globalStyles.container}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Text style={globalStyles.title}>Edit Item</Text>
@@ -148,5 +156,7 @@ export default function UpdateItemScreen() {
         </Pressable>
       </View>
     </View>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

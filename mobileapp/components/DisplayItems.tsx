@@ -24,12 +24,17 @@ export function DisplayItems() {
 
     return (
         <FlatList
+        style={{ width: '100%' }}
+         contentContainerStyle={{
+            paddingVertical: 10,
+            width: '100%',
+          }}
         data={items}
         keyExtractor={(item) => item.item_id.toString()}
         refreshing={loading}
         onRefresh={refresh}
         renderItem={({ item }) => (
-          <Pressable onPress={() => router.push(`/update-item/${item.item_id}`)} style={globalStyles.card}>
+          <Pressable onPress={() => router.push(`/update-item/${item.item_id}`)} style={globalStyles.itemCard}>
             <Text style={globalStyles.cardTitle}>{item.item_name}</Text>
             <Text style={globalStyles.cardDetail}>SKU: {item.item_sku}</Text>
             <Text style={globalStyles.cardDetail}>Color: {item.item_color}</Text>
