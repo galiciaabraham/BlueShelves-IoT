@@ -5,12 +5,12 @@ const router = express.Router();
 // Get all items
 router.get('/', itemController.getAllItems);
 // Get item by ID
-router.get('/:id', itemController.getItemById);
+router.get('/:item_id', itemController.getItemById);
 // Create new item
 router.post('/', itemController.createItem);
 // Update item
-router.put('/:id', itemController.updateItem);
+router.put('/:item_id', itemController.updateItem);
 // Delete item
-router.delete('/:id', itemController.deleteItem);
+router.delete('/:item_id', itemController.deleteItem);
 
 export default router;

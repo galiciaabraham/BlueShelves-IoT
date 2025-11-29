@@ -72,10 +72,33 @@ export const globalStyles = StyleSheet.create({
     borderRadius: 6,
     alignItems: 'center',
   },
+
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+    padding: 13,
+  },
+
+  deleteButton: {
+    padding: 16,
+    margin: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+    backgroundColor: '#ffe6e6',
+  },
+
+  buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 10,
+    },
+
+  buttonUpdate: {
+    backgroundColor: '#007bff',
+    padding: 12,
+    borderRadius: 6,
   },
 
   // Cards
@@ -90,13 +113,24 @@ export const globalStyles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 5,
+    margin: 5,
   },
   cardDetail: {
-    fontSize: 14,
+    fontSize: 16,
+    padding: 5,
     color: '#555',
+  },
+
+  itemCard: {
+    backgroundColor: '#f0f0f0',
+    padding: 15,
+    borderRadius: 8,
+    marginVertical: 8,
+    width: '90%',
+    alignSelf: 'center',
+    flexDirection: 'column',
   },
 
   // Links
@@ -105,6 +139,7 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: '#007bff',
     paddingVertical: 12,
     paddingHorizontal: 20,
+    margin: 10,
     borderRadius: 6,
     alignItems: 'center',
     fontWeight: 'bold',
