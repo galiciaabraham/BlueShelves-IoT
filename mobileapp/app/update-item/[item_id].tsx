@@ -9,7 +9,7 @@ import { validateItemFields } from "@/components/utilities/validateItem";
 
 export default function UpdateItemScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams();
+  const { item_id } = useLocalSearchParams();
 
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +23,7 @@ export default function UpdateItemScreen() {
   useEffect(() => {
     async function loadItem() {
       try {
-        const data = await fetchAllItems().then(items => items.find((i : any)  => i.item_id === Number(id)));
+        const data = await fetchAllItems().then(items => items.find((i : any)  => i.item_id === Number(item_id)));
 
         setName(data.item_name);
         setColor(data.item_color);
@@ -38,7 +38,7 @@ export default function UpdateItemScreen() {
       }
     }
     loadItem();
-  }, [id]);
+  }, [item_id]);
 
   async function handleUpdate() {
     const error = validateItemFields({
@@ -58,7 +58,7 @@ export default function UpdateItemScreen() {
             return;
         }
 
-      await updateItem(Number(id), {
+      await updateItem(Number(item_id), {
         item_name,
         item_color,
         item_size,
@@ -84,7 +84,7 @@ export default function UpdateItemScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              await deleteItem(Number(id));
+              await deleteItem(Number(item_id));
               Alert.alert("Deleted", "Item removed");
               router.replace("/dashboard"); // ensures it's removed from list
             } catch (err) {
@@ -102,10 +102,6 @@ export default function UpdateItemScreen() {
     <View style={globalStyles.container}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Text style={globalStyles.title}>Edit Item</Text>
-
-        <Pressable onPress={confirmDelete}>
-          <Ionicons name="trash" size={28} color="red" />
-        </Pressable>
       </View>
 
       <TextInput
@@ -143,8 +139,14 @@ export default function UpdateItemScreen() {
         value={item_sku}
         onChangeText={setSku}
       />
-
-      <Button title="Update Item" onPress={handleUpdate} />
+    <View style={globalStyles.buttonContainer}>
+      <Pressable style={globalStyles.buttonUpdate} onPress={handleUpdate}>
+        <Text style={globalStyles.buttonText}>Update Item</Text>
+      </Pressable>
+      <Pressable style={globalStyles.deleteButton} onPress={confirmDelete}>
+          <Ionicons name="trash" size={28} color="red" />
+        </Pressable>
+      </View>
     </View>
   );
 }

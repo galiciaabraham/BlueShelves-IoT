@@ -1,7 +1,7 @@
-import { Item } from "@/types/itemTypes";    
+import { ItemForm } from "@/types/itemTypes";    
 
 
-export function validateItemFields({ item_name, item_color, item_size, item_quantity, item_sku }: Item): string | null {
+export function validateItemFields({ item_name, item_color, item_size, item_quantity, item_sku }: ItemForm): string | null {
   if (!item_name.trim()) return "Item name is required";
   if (!item_color.trim()) return "Color is required";
   if (!item_size.trim()) return "Size is required";
