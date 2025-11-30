@@ -8,6 +8,8 @@ import { Item } from '@/types/item';
 import CreateItemModal from '@/components/CreateItemModal';
 import EditItemModal from '@/components/EditItemModal';
 import { getItems } from '../api/services';
+import DownloadButton from '@/components/DownloadButton';
+import { generateFileName } from '@/utils/reportGenerator';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -35,6 +37,14 @@ export default function Home() {
     fetchItems();
   }, []);
 
+  const fields = [
+    { label: "SKU", value: "item_sku" },
+    { label: "Name", value: "item_name" },
+    { label: "Color", value: "item_color" },
+    { label: "Size", value: "item_size" },
+    { label: "Quantity", value: "item_quantity" },
+  ];
+
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-black dark:bg-black dark:text-white">
       <Header />
@@ -55,6 +65,14 @@ export default function Home() {
         >
           New Item
         </button>
+
+        <DownloadButton
+          data={items}
+          fields={fields}
+          filename={generateFileName("csv")}
+        >
+          Download
+        </DownloadButton>
       </div>
 
       {/* Inventory Table */}
@@ -62,11 +80,11 @@ export default function Home() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-gray-100 dark:bg-zinc-800">
-              <th className="border p-2">SKU</th>
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Color</th>
-              <th className="border p-2">Size</th>
-              <th className="border p-2">Quantity</th>
+              {fields.map((field) => (
+                <th key={field.value} className="border p-2">
+                  {field.label}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
