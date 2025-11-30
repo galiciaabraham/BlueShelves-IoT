@@ -104,7 +104,7 @@ export default function Home() {
       <CreateItemModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={() => {fetchItems}}
+        onSuccess={fetchItems}
       />
 
       {selectedItem && (
@@ -112,7 +112,7 @@ export default function Home() {
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           item={selectedItem}
-          onSuccess={() => {fetchItems}}
+          onSuccess={fetchItems}
         />
       )}
     </div>
