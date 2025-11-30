@@ -2,18 +2,19 @@
   "extends": "./node_modules/expo/tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-native",
-    "types": ["react-native"],
+    "types": ["react-native"],   // ✅ add expo-env types for environment variables
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+      "@/*": ["./*"]
+    },
+    "baseUrl": ".",                          // ✅ ensures path alias resolution works consistently
+    "resolveJsonModule": true,               // ✅ allows importing JSON configs if needed
+    "esModuleInterop": true                  // ✅ smoother interop with CommonJS modules
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts"                          // ✅ ensures environment variable types are included
   ]
 }
