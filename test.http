@@ -80,8 +80,13 @@ DELETE http://localhost:3000/items/1
 Accept: application/json
 
 ### Get all tracking records
-GET http://localhost:3000/trackings
+GET http://localhost:3000/trackings/1
 Accept: application/json
+
+### Get tracking by ID
+GET https://blueshelves-iot.onrender.com/trackings/
+Accept: application/json
+
 
 ### Get all users
 GET http://localhost:3000/users
