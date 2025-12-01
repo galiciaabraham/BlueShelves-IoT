@@ -7,7 +7,7 @@ export const ItemModel = {
     },
 
     async getItemById(id) {
-        const rows = await sql`SELECT * FROM items WHERE id = ${id}`;
+        const rows = await sql`SELECT * FROM items WHERE item_id = ${id}`;
         return rows[0];
     },
 
