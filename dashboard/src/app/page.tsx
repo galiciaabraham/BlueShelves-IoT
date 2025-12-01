@@ -10,6 +10,7 @@ import EditItemModal from '@/components/EditItemModal';
 import { getItems } from '../api/services';
 import DownloadButton from '@/components/DownloadButton';
 import { generateFileName } from '@/utils/reportGenerator';
+import { FaDownload, FaPlus } from 'react-icons/fa';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -63,7 +64,8 @@ export default function Home() {
           onClick={() => setIsCreateModalOpen(true)}
           className="bg-blue-500 text-white py-2 px-4 cursor-pointer rounded hover:bg-blue-700 transition whitespace-nowrap"
         >
-          New Item
+          <span className="hidden sm:inline">New Item</span>
+          <FaPlus className="block sm:hidden w-5 h-5" />
         </button>
 
         <DownloadButton
@@ -71,7 +73,8 @@ export default function Home() {
           fields={fields}
           filename={generateFileName("csv")}
         >
-          Download
+          <span className="hidden sm:inline">Download</span>
+          <FaDownload className="block sm:hidden w-5 h-5" />
         </DownloadButton>
       </div>
 
