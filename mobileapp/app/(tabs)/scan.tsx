@@ -3,52 +3,57 @@ import { View, Text, Pressable, ActivityIndicator, FlatList } from 'react-native
 import { globalStyles } from '@/styles/globalStyles';
 import SubmitScanning from '@/components/utilities/SubmitScanning';
 import { simulateScan } from '@/tagSimulator/scanService';
+import { API_BASE_URL } from '@/config'; // ✅ central config
 
 export default function ScanScreen() {
   const [isScanning, setIsScanning] = useState(false);
   const [scannedTags, setScannedTags] = useState<any[]>([]);
   const [showSubmitButtons, setShowSubmitButtons] = useState(false);
 
-  const API_URL = 'https://blueshelves-iot.onrender.com';
-
-  // Helper to fetch tracking + item
+  // ✅ Helper to fetch tracking + item
   const fetchTracking = async (tracking_id: number) => {
     try {
-      const trackRes = await fetch(`${API_URL}/trackings/${tracking_id}`);
-    
-    if (!trackRes.ok) {
-      // Tracking not found, unknown item
+      // Query item_tracking table
+      const trackRes = await fetch(`${API_BASE_URL}/trackings/${tracking_id}`, {
+        headers: { Accept: 'application/json' },
+      });
+
+      if (!trackRes.ok) {
+        // Tracking not found → unknown tag
+        return {
+          tracking_id,
+          item: null,
+          tracking_status: 'unknown',
+          last_seen: null,
+        };
+      }
+
+      const trackData = await trackRes.json(); 
+      // Expected: { tracking_id, item_id, last_seen, tracking_status }
+
+      // Fetch item details if item_id exists
+      let itemData = null;
+      if (trackData.item_id) {
+        const itemRes = await fetch(`${API_BASE_URL}/items/${trackData.item_id}`, {
+          headers: { Accept: 'application/json' },
+        });
+        if (itemRes.ok) itemData = await itemRes.json();
+      }
+
+      return {
+        tracking_id: trackData.tracking_id,
+        tracking_status: trackData.tracking_status,
+        last_seen: trackData.last_seen,
+        item: itemData,
+      };
+    } catch (error) {
+      console.error('Error fetching tracking:', error);
       return {
         tracking_id,
         item: null,
         tracking_status: 'unknown',
         last_seen: null,
       };
-    }
-
-    const trackData = await trackRes.json(); // { tracking_id, item_id, last_seen, tracking_status }
-
-    // Fetch the item only if item_id exists
-    let itemData = null;
-    if (trackData.item_id) {
-      const itemRes = await fetch(`${API_URL}/items/${trackData.item_id}`);
-      if (itemRes.ok) itemData = await itemRes.json();
-    }
-
-    return {
-      tracking_id: trackData.tracking_id,
-      tracking_status: trackData.tracking_status,
-      last_seen: trackData.last_seen,
-      item: itemData,
-    };
-  } catch (error) {
-    console.error('Error fetching tracking:', error);
-    return {
-      tracking_id,
-      item: null,
-      tracking_status: 'unknown',
-      last_seen: null,
-      }
     }
   };
 
