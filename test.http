@@ -76,11 +76,11 @@ Content-Type: application/json
 }
 
 ### Delete an item (if supported)
-DELETE http://localhost:3000/items/1
+DELETE http://localhost:3000/items/2
 Accept: application/json
 
 ### Get all tracking records
-GET http://localhost:3000/trackings/1
+GET http://192.168.0.195:3000/trackings/2
 Accept: application/json
 
 ### Get tracking by ID
