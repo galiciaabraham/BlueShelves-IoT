@@ -2,15 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { mockItems } from '@/api/mockItems';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import { Header, Footer, CreateItemModal, EditItemModal, DownloadButton } from '@/components'; 
 import { Item } from '@/types/item';
-import CreateItemModal from '@/components/CreateItemModal';
-import EditItemModal from '@/components/EditItemModal';
 import { getItems } from '../api/services';
-import DownloadButton from '@/components/DownloadButton';
 import { generateFileName } from '@/utils/reportGenerator';
 import { FaDownload, FaPlus } from 'react-icons/fa';
+import { fields } from '@/constants/fields';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -37,14 +34,6 @@ export default function Home() {
   useEffect(() => {
     fetchItems();
   }, []);
-
-  const fields = [
-    { label: "SKU", value: "item_sku" },
-    { label: "Name", value: "item_name" },
-    { label: "Color", value: "item_color" },
-    { label: "Size", value: "item_size" },
-    { label: "Quantity", value: "item_quantity" },
-  ];
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-black dark:bg-black dark:text-white">

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Item } from '@/types/item';
 import { updateItem, deleteItem } from '../api/services/itemService';
 import { Modal } from './Modal';
-import { UpdateItemSchema } from '@/types/schema';
+import { UpdateItemSchema } from '@/schemas/schema';
 import z from 'zod';
 
 interface EditItemModalProps {
