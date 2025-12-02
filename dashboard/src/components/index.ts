@@ -5,3 +5,4 @@ export { default as DownloadButton } from './DownloadButton';
 export { default as Footer } from './Footer';
 export { default as Header } from './Header';
 export { Modal } from './Modal';
+export { default as InventoryTable } from './InventoryTable';
