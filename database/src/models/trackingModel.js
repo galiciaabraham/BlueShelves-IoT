@@ -6,23 +6,23 @@ export const TrackingModel = {
         return rows;
     },
 
-    async getTrackingById(id) {
-        const rows = await sql`SELECT * FROM item_tracking WHERE tracking_id = ${id}`;
+    async getTrackingById(tracking_id) {
+        const rows = await sql`SELECT * FROM item_tracking WHERE tracking_id = ${tracking_id}`;
         return rows[0];
     },
 
-    async createTracking({tracking_id, item_id, uuid, tracking_status} ) {
+    async createTracking({ item_id, tracking_status} ) {
         const rows = await sql`
-            INSERT INTO item_tracking (tracking_id, item_id, last_seen, tracking_status) VALUES (${tracking_id}, ${item_id}, NOW(), ${tracking_status}) RETURNING *`;
+            INSERT INTO item_tracking (item_id, last_seen, tracking_status) VALUES (${item_id}, NOW(), ${tracking_status}) RETURNING *`;
         return rows[0];
     },
 
-    async updateTracking(id, {tracking_id, item_id, last_seen, tracking_status}) {
-        const rows = await sql`UPDATE item_tracking SET tracking_id = ${tracking_id}, item_id = ${item_id}, last_seen = ${last_seen}, tracking_status = ${tracking_status} WHERE tracking_id = ${id} RETURNING *`;
+    async updateTracking(tracking_id, {item_id, last_seen, tracking_status}) {
+        const rows = await sql`UPDATE item_tracking SET item_id = ${item_id}, last_seen = ${last_seen}, tracking_status = ${tracking_status} WHERE tracking_id = ${tracking_id} RETURNING *`;
         return rows[0];
     },
 
-    async patchTracking(id, fields) {
+    async patchTracking(tracking_id, fields) {
         fields = [];
         const values = [];
 
@@ -34,13 +34,13 @@ export const TrackingModel = {
             throw new Error('No fields to update');
         }
 
-        const query = sql`UPDATE item_tracking SET ${sql.join(fields, sql`, `)} WHERE tracking_id = ${id} RETURNING *`;
+        const query = sql`UPDATE item_tracking SET ${sql.join(fields, sql`, `)} WHERE tracking_id = ${tracking_id} RETURNING *`;
         const rows = await query;
         return rows[0];
     },
 
-    async deleteTracking(id) {
-        const rows = await sql`DELETE FROM item_tracking WHERE tracking_id = ${id} RETURNING *`;
+    async deleteTracking(tracking_id) {
+        const rows = await sql`DELETE FROM item_tracking WHERE tracking_id = ${tracking_id} RETURNING *`;
         return rows[0];
     },
 
