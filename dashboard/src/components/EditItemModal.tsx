@@ -1,7 +1,7 @@
 // src/components/EditItemModal.tsx
 import { useEffect, useState } from 'react';
 import { Item } from '@/types/item';
-import { updateItem } from '../api/services/itemService';
+import { updateItem, deleteItem } from '../api/services/itemService';
 import { Modal } from './Modal';
 import { UpdateItemSchema } from '@/types/schema';
 import z from 'zod';
@@ -70,6 +70,16 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
 
   if (!isOpen) return null;
 
+  const handleDelete = async () => {
+    try {
+      await deleteItem(item.item_id);
+      onSuccess();
+      onClose();
+    } catch (error) {
+      console.error("Failed to delete item:", error);
+    }
+  };
+
   return (
     <Modal>
         <h2 className="text-xl font-bold mb-4">Edit Item</h2>
@@ -129,20 +139,29 @@ export default function EditItemModal({ isOpen, onClose, item, onSuccess }: Edit
               />
             {errors.item_sku && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{errors.item_sku}</p>} 
           </div>
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-between space-x-3">
             <button
               type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-700"
+              onClick={handleDelete}
+              className="px-4 py-2 text-sm font-medium text-red-600 bg-transparent dark:bg-red-600 dark:text-white rounded-md hover:bg-red-100 dark:hover:bg-red-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
-              Cancel
+              Delete
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-              Update
-            </button>
+            <div className="flex space-x-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-700"
+                >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                Update
+              </button>
+            </div>
           </div>
         </form>
     </Modal>
