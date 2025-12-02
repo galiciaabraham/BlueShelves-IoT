@@ -10,49 +10,58 @@ export default function ScanScreen() {
   const [scannedTags, setScannedTags] = useState<any[]>([]);
   const [showSubmitButtons, setShowSubmitButtons] = useState(false);
 
-  // ✅ Helper to fetch tracking + item
+  // Helper to fetch tracking + item
   const fetchTracking = async (tracking_id: number) => {
     try {
-      // Query item_tracking table
       const trackRes = await fetch(`${API_BASE_URL}/trackings/${tracking_id}`, {
         headers: { Accept: 'application/json' },
       });
 
       if (!trackRes.ok) {
-        // Tracking not found → unknown tag
         return {
           tracking_id,
-          item: null,
           tracking_status: 'unknown',
           last_seen: null,
+          item_id: null,
+          item_name: null,
+          item_color: null,
+          item_size: null,
+          item_quantity: null,
+          item_sku: null,
         };
       }
 
-      const trackData = await trackRes.json(); 
-      // Expected: { tracking_id, item_id, last_seen, tracking_status }
+      const trackData = await trackRes.json();
 
-      // Fetch item details if item_id exists
-      let itemData = null;
+      let itemData = {};
       if (trackData.item_id) {
         const itemRes = await fetch(`${API_BASE_URL}/items/${trackData.item_id}`, {
           headers: { Accept: 'application/json' },
         });
-        if (itemRes.ok) itemData = await itemRes.json();
+        if (itemRes.ok) {
+          itemData = await itemRes.json();
+        }
       }
 
+      // ✅ Flatten item fields directly into the returned object
       return {
         tracking_id: trackData.tracking_id,
         tracking_status: trackData.tracking_status,
         last_seen: trackData.last_seen,
-        item: itemData,
+        ...itemData,
       };
     } catch (error) {
       console.error('Error fetching tracking:', error);
       return {
         tracking_id,
-        item: null,
         tracking_status: 'unknown',
         last_seen: null,
+        item_id: null,
+        item_name: null,
+        item_color: null,
+        item_size: null,
+        item_quantity: null,
+        item_sku: null,
       };
     }
   };
@@ -114,7 +123,7 @@ export default function ScanScreen() {
         <FlatList
           style={{ marginTop: 20 }}
           data={scannedTags}
-          keyExtractor={(item) => String(item.tracking_id)}
+          keyExtractor={(item, index) => `${item.tracking_id}-${index}`} // ✅ unique key
           renderItem={({ item }) => (
             <View
               style={{
@@ -125,13 +134,13 @@ export default function ScanScreen() {
               }}
             >
               <Text style={{ fontWeight: 'bold' }}>Tracking ID: {item.tracking_id}</Text>
-              {item.item ? (
+              {item.item_name ? (
                 <>
-                  <Text>Item: {item.item.item_name}</Text>
-                  <Text>Color: {item.item.item_color}</Text>
-                  <Text>Size: {item.item.item_size}</Text>
-                  <Text>Quantity: {item.item.item_quantity}</Text>
-                  <Text>SKU: {item.item.item_sku}</Text>
+                  <Text>Item: {item.item_name}</Text>
+                  <Text>Color: {item.item_color}</Text>
+                  <Text>Size: {item.item_size}</Text>
+                  <Text>Quantity: {item.item_quantity}</Text>
+                  <Text>SKU: {item.item_sku}</Text>
                 </>
               ) : (
                 <Text style={{ color: 'red', fontStyle: 'italic' }}>Unknown Item</Text>
@@ -147,7 +156,7 @@ export default function ScanScreen() {
       {showSubmitButtons && scannedTags.length > 0 && (
         <SubmitScanning
           scannedTags={scannedTags.map((st) => ({
-            item_id: st.item?.item_id ?? 0,
+            item_id: st.item_id ?? 0,
             tracking_id: st.tracking_id,
             tracking_status: st.tracking_status,
             last_seen: st.last_seen,
