@@ -5,7 +5,7 @@ const router = express.Router();
 // Get all trackings
 router.get('/', trackingController.getAllTrackings);
 // Get tracking by ID
-router.get('/:id', trackingController.getTrackingById);
+router.get('/:tracking_id', trackingController.getTrackingById);
 // Create new tracking
 router.post('/', trackingController.createTracking);
 // Update tracking

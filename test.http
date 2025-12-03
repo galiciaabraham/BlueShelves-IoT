@@ -35,7 +35,7 @@ DELETE https://blueshelves-iot.onrender.com/items/1
 Accept: application/json
 
 ### Get all tracking records
-GET https://blueshelves-iot.onrender.com/trackings
+GET https://blueshelves-iot.onrender.com/trackings/1
 Accept: application/json
 
 ### Get all users
@@ -80,11 +80,11 @@ DELETE http://localhost:3000/items/2
 Accept: application/json
 
 ### Get all tracking records
-GET http://192.168.0.195:3000/trackings/2
+GET http://localhost:3000/trackings/1
 Accept: application/json
 
 ### Get tracking by ID
-GET https://blueshelves-iot.onrender.com/trackings/
+GET https://blueshelves-iot.onrender.com/trackings/1
 Accept: application/json
 
 
