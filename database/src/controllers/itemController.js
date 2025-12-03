@@ -13,7 +13,7 @@ export const itemController = {
 
   async getItemById(req, res, next) {
     try {
-      const item = await ItemModel.getItemById(req.params.id);
+      const item = await ItemModel.getItemById(req.params.item_id);
       if (!item) {
         return res.status(404).json({ error: 'Item not found' });
       }
@@ -40,7 +40,7 @@ export const itemController = {
   async updateItem(req, res, next) {
     try {
       const { item_name, item_color, item_size, item_quantity, item_sku } = req.body;
-      const updated = await ItemModel.updateItem(req.params.id, { item_name, item_color, item_size, item_quantity, item_sku });
+      const updated = await ItemModel.updateItem(req.params.item_id, { item_name, item_color, item_size, item_quantity, item_sku });
       if (!updated) {
         return res.status(404).json({ error: 'Item not found' });
       }
@@ -52,7 +52,7 @@ export const itemController = {
 
   async deleteItem(req, res, next) {
     try {
-      const deleted = await ItemModel.deleteItem(req.params.id);
+      const deleted = await ItemModel.deleteItem(req.params.item_id);
       res.json(deleted);
     } catch (error) {
       next(error);
