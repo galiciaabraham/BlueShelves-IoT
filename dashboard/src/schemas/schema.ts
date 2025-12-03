@@ -1,4 +1,4 @@
-// src/types/schema.ts
+// src/schemas/schema.ts
 import { z } from 'zod';
 
 // Creating an item

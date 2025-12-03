@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Item } from '@/types/item';
 import { createItem } from '../api/services/itemService';
 import { Modal } from './Modal';
-import { CreateItemSchema } from '@/types/schema';
+import { CreateItemSchema } from '@/schemas/schema';
 import z from 'zod';
 
 interface CreateItemModalProps {

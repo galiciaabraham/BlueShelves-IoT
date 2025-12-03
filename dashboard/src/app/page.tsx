@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { mockItems } from '@/api/mockItems';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import { Header, Footer, CreateItemModal, EditItemModal, DownloadButton, InventoryTable } from '@/components'; 
 import { Item } from '@/types/item';
-import CreateItemModal from '@/components/CreateItemModal';
-import EditItemModal from '@/components/EditItemModal';
 import { getItems } from '../api/services';
+import { generateFileName } from '@/utils/reportGenerator';
+import { FaDownload, FaPlus } from 'react-icons/fa';
+import { fields } from '@/constants/fields';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -15,11 +15,16 @@ export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [isLoading, setLoading] = useState<boolean>(true);
 
-  const filteredItems = items.filter(item =>
-    item.item_name.toLowerCase().includes(search.toLowerCase()) ||
-    item.item_sku.toLowerCase().includes(search.toLowerCase())
-  );
+const filteredItems = items.filter((item) =>
+  Object.entries(item).some(([key, value]) => 
+    key !== 'item_id' && key !== 'updated_at' && 
+    (typeof value === 'string' && value.toLowerCase().includes(search.toLowerCase())) ||
+    // Only attempts to do type conversion to number properties
+    (typeof value === 'number' && String(value).includes(search))
+  )
+);
 
   const fetchItems = async () => {
     try {
@@ -28,6 +33,8 @@ export default function Home() {
     } catch (error) {
         console.error("Failed to fetch items, using mock data:", error);
         setItems(mockItems); // Fallback to mock data
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -43,7 +50,7 @@ export default function Home() {
       <div className="flex gap-3 px-6 py-4 max-w-4xl mx-auto ">
         <input
           type="text"
-          placeholder="Search by (SKU or Name)..."
+          placeholder="Search by (SKU, Name, etc.)..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full p-2 border rounded"
@@ -53,58 +60,35 @@ export default function Home() {
           onClick={() => setIsCreateModalOpen(true)}
           className="bg-blue-500 text-white py-2 px-4 cursor-pointer rounded hover:bg-blue-700 transition whitespace-nowrap"
         >
-          New Item
+          <span className="hidden sm:inline">New Item</span>
+          <FaPlus className="block sm:hidden w-5 h-5" />
         </button>
+
+        <DownloadButton
+          data={filteredItems}
+          fields={fields}
+          filename={generateFileName("csv")}
+        >
+          <span className="hidden sm:inline">Download</span>
+          <FaDownload className="block sm:hidden w-5 h-5" />
+        </DownloadButton>
       </div>
 
       {/* Inventory Table */}
-      <div className="px-6 py-4 max-w-5xl mx-auto overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-zinc-800">
-              <th className="border p-2">SKU</th>
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Color</th>
-              <th className="border p-2">Size</th>
-              <th className="border p-2">Quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredItems.map((item, index) => (
-              <tr key={index}>
-                <td
-                  className="border p-2 hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
-                  onClick={() => {
-                    setSelectedItem(item);
-                    setIsEditModalOpen(true);
-                  }}
-                >
-                  {item.item_sku}
-                </td>
-                <td
-                  className="border p-2 hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
-                  onClick={() => {
-                    setSelectedItem(item);
-                    setIsEditModalOpen(true);
-                  }}
-                >
-                  {item.item_name}
-                </td>
-                <td className="border p-2">{item.item_color}</td>
-                <td className="border p-2">{item.item_size}</td>
-                <td className="border p-2">{item.item_quantity}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <InventoryTable
+        fields={fields}
+        items={filteredItems}
+        setSelectedItem={setSelectedItem}
+        setIsEditModalOpen={setIsEditModalOpen}
+        loading={isLoading}
+      />
 
       <Footer />
 
       <CreateItemModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={() => {fetchItems}}
+        onSuccess={fetchItems}
       />
 
       {selectedItem && (
@@ -112,7 +96,7 @@ export default function Home() {
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           item={selectedItem}
-          onSuccess={() => {fetchItems}}
+          onSuccess={fetchItems}
         />
       )}
     </div>

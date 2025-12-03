@@ -1,4 +1,4 @@
-// components/Modal.tsx
+// src/components/Modal.tsx
 import React, { ReactNode } from "react";
 
 interface ModalProps {
