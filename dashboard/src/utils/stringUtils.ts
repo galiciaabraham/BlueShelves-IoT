@@ -6,3 +6,9 @@ export const getFormattedDate = (date: Date): string => {
 
   return `${year}-${month}-${day}`;
 };
+
+export const toTitleCase = (str: string): string =>
+  str.toLowerCase().replace(/(?:^|\s)\S/g, (char) => char.toUpperCase());
+
+export const capitalizeFirstLetter = (str: string): string => 
+  str ? str[0].toUpperCase() + str.slice(1) : str;

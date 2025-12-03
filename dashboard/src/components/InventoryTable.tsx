@@ -2,6 +2,7 @@
 'use client';
 import { useState } from 'react';
 import { Item, Field } from '@/types';
+import { capitalizeFirstLetter, toTitleCase } from '@/utils';
 
 interface InventoryTableProps {
   fields: Field[];
@@ -82,7 +83,7 @@ export default function InventoryTable({
                   setIsEditModalOpen(true);
                 }}
               >
-                {item.item_sku}
+                {item.item_sku.toUpperCase()}
               </td>
               <td
                 className="border p-2 hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
@@ -91,10 +92,10 @@ export default function InventoryTable({
                   setIsEditModalOpen(true);
                 }}
               >
-                {item.item_name}
+                {toTitleCase(item.item_name)}
               </td>
-              <td className="border p-2">{item.item_color}</td>
-              <td className="border p-2">{item.item_size}</td>
+              <td className="border p-2">{toTitleCase(item.item_color)}</td>
+              <td className="border p-2">{capitalizeFirstLetter(item.item_size)}</td>
               <td className="border p-2">{item.item_quantity}</td>
             </tr>
           ))}
