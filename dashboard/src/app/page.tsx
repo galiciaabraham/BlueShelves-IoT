@@ -62,7 +62,7 @@ const filteredItems = items.filter((item) =>
         </button>
 
         <DownloadButton
-          data={items}
+          data={filteredItems}
           fields={fields}
           filename={generateFileName("csv")}
         >
