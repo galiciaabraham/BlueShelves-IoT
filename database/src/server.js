@@ -35,16 +35,6 @@ app.use(cors({
 
 app.use(express.json());
 
-const apiKeyMiddleware = (req, res, next) => {
-  const apiKey = req.headers['x-api-key'];
-
-if (!apiKey || apiKey !== process.env.API_SECRET_KEY) {
-    return res.status(401).json({ message: 'Unauthorized: Invalid API Key' });
-  }
-
-  next();
-};
-
 // Apply API key middleware to all routes
 app.use(apiKeyMiddleware);
 
@@ -60,6 +50,18 @@ app.get('/', (req, res) => {
 
 // Error handling middleware
 app.use(errorHandler);
+
+const allowedKeys = [process.env.API_SECRET_KEY, process.env.DASHBOARD_API_KEY, process.env.MOBILE_API_KEY];
+
+const apiKeyMiddleware = (req, res, next) => {
+  const apiKey = req.headers['x-api-key'];
+
+if (!apiKey || !allowedKeys.includes(apiKey)) {
+    return res.status(401).json({ message: 'Unauthorized: Invalid API Key' });
+  }
+
+  next();
+};
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
