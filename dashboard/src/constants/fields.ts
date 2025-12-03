@@ -1,3 +1,4 @@
+// src/constants/fields.ts
 import { Field } from "@/types/";
 
 export const fields: Field[] = [

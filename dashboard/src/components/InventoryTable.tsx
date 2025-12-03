@@ -1,3 +1,4 @@
+// src/components/InventoryTable.ts
 'use client';
 import { useState } from 'react';
 import { Item, Field } from '@/types';
