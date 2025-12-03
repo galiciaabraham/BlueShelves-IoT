@@ -16,10 +16,14 @@ export default function Home() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
-  const filteredItems = items.filter(item =>
-    item.item_name.toLowerCase().includes(search.toLowerCase()) ||
-    item.item_sku.toLowerCase().includes(search.toLowerCase())
-  );
+const filteredItems = items.filter((item) =>
+  Object.entries(item).some(([key, value]) => 
+    key !== 'item_id' && key !== 'updated_at' && 
+    (typeof value === 'string' && value.toLowerCase().includes(search.toLowerCase())) ||
+    // Only attempts to do type conversion to number properties
+    (typeof value === 'number' && String(value).includes(search))
+  )
+);
 
   const fetchItems = async () => {
     try {
@@ -43,7 +47,7 @@ export default function Home() {
       <div className="flex gap-3 px-6 py-4 max-w-4xl mx-auto ">
         <input
           type="text"
-          placeholder="Search by (SKU or Name)..."
+          placeholder="Search by (SKU, Name, etc.)..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full p-2 border rounded"
