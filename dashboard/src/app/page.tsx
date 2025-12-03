@@ -15,6 +15,7 @@ export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [isLoading, setLoading] = useState<boolean>(true);
 
 const filteredItems = items.filter((item) =>
   Object.entries(item).some(([key, value]) => 
@@ -32,6 +33,8 @@ const filteredItems = items.filter((item) =>
     } catch (error) {
         console.error("Failed to fetch items, using mock data:", error);
         setItems(mockItems); // Fallback to mock data
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -77,6 +80,7 @@ const filteredItems = items.filter((item) =>
         items={filteredItems}
         setSelectedItem={setSelectedItem}
         setIsEditModalOpen={setIsEditModalOpen}
+        loading={isLoading}
       />
 
       <Footer />

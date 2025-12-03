@@ -9,13 +9,25 @@ interface InventoryTableProps {
   items: Item[];
   setSelectedItem: (item: Item) => void;
   setIsEditModalOpen: (isOpen: boolean) => void;
+  loading: boolean;
 }
+
+const SkeletonRow = ({ colSpan }: { colSpan: number }) => (
+  <tr>
+    {Array(colSpan).fill(0).map((_, i) => (
+      <td key={i} className="border p-2">
+        <div className="h-4 bg-gray-200 dark:bg-zinc-700 rounded animate-pulse"></div>
+      </td>
+    ))}
+  </tr>
+);
 
 export default function InventoryTable({
   fields,
   items,
   setSelectedItem,
   setIsEditModalOpen,
+  loading,
 }: InventoryTableProps) {
   const [sortConfig, setSortConfig] = useState<{
     key: string | null;
@@ -74,31 +86,46 @@ export default function InventoryTable({
           </tr>
         </thead>
         <tbody>
-          {sortedItems.map((item, index) => (
-            <tr key={index}>
-              <td
-                className="border p-2 hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
-                onClick={() => {
-                  setSelectedItem(item);
-                  setIsEditModalOpen(true);
-                }}
-              >
-                {item.item_sku.toUpperCase()}
+          {loading ? (
+            // Show skeleton while loading
+            Array(fields.length).fill(0).map((_, i) => (
+              <SkeletonRow key={i} colSpan={fields.length} />
+            ))
+          ) : sortedItems.length > 0 ? (
+            // Show data when not loading and items exist
+            sortedItems.map((item, index) => (
+              <tr key={index}>
+                <td
+                  className="border p-2 hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
+                  onClick={() => {
+                    setSelectedItem(item);
+                    setIsEditModalOpen(true);
+                  }}
+                >
+                  {item.item_sku.toUpperCase()}
+                </td>
+                <td
+                  className="border p-2 hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
+                  onClick={() => {
+                    setSelectedItem(item);
+                    setIsEditModalOpen(true);
+                  }}
+                >
+                  {toTitleCase(item.item_name)}
+                </td>
+                <td className="border p-2">{toTitleCase(item.item_color)}</td>
+                <td className="border p-2">{capitalizeFirstLetter(item.item_size)}</td>
+                <td className="border p-2">{item.item_quantity}</td>
+              </tr>
+            ))
+          ) : (
+            // Show "No items found" message if not loading and items is empty
+            <tr>
+              <td colSpan={fields.length} className="border p-2 text-center">
+                No items found.
               </td>
-              <td
-                className="border p-2 hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
-                onClick={() => {
-                  setSelectedItem(item);
-                  setIsEditModalOpen(true);
-                }}
-              >
-                {toTitleCase(item.item_name)}
-              </td>
-              <td className="border p-2">{toTitleCase(item.item_color)}</td>
-              <td className="border p-2">{capitalizeFirstLetter(item.item_size)}</td>
-              <td className="border p-2">{item.item_quantity}</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
