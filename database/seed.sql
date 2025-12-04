@@ -10,8 +10,7 @@ INSERT INTO items (item_name, item_color, item_size, item_quantity, item_sku) VA
     ('Item C', 'Green', 'Small', 150, 'SKU003');
 
 -- Item tracking table seeding
-INSERT INTO item_tracking (item_id, uuid, last_seen, tracking_status) VALUES
-    (1, 'UUID-001', NOW(), 'lost'),
-    (2, 'UUID-002', NOW(), 'lost'),
-    (3, 'UUID-003', NOW(), 'lost');
-
+INSERT INTO item_tracking (item_id, last_seen, tracking_status) VALUES
+    (1, NOW(), 'lost'),
+    (2, NOW(), 'lost'),
+    (3, NOW(), 'lost');
