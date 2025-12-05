@@ -16,6 +16,21 @@ export async function fetchAllItems() {
   }
 }  
 
+export async function fetchItemById(item_id: number): Promise<Item | null> {
+  try {
+    const response = await fetch(`${API_URL}/items/${item_id}`, {
+      headers: {
+        Accept: 'application/json',
+        'x-api-key': API_KEY || '',
+      },
+    });
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching item by ID:', error);
+    return null;
+  }
+}
+
 export async function createItem(itemData: any ) {
   try {
     const response = await fetch(`${API_URL}/items`, {

@@ -47,37 +47,28 @@ export const TrackingModel = {
     async upsertTrackingList(trackingList) {
         const results = [];
 
-  for (const t of trackingList) {
-    const {
-      tracking_id,
-      item_id,
-      last_seen,
-      tracking_status
-    } = t;
+        for (const t of trackingList) {
+          const {
+            tracking_id,
+            item_id,
+            last_seen,
+            tracking_status
+          } = t;
 
-    const normalizedItemId = item_id === 0 ? null : item_id;
+        const normalizedItemId = item_id === 0 ? null : item_id;
 
-    const query = `
-      INSERT INTO trackings (tracking_id, item_id, last_seen, tracking_status)
-      VALUES ($1, $2, $3, $4)
-      ON CONFLICT (tracking_id)
-      DO UPDATE SET
-        item_id = EXCLUDED.item_id,
-        last_seen = EXCLUDED.last_seen,
-        tracking_status = EXCLUDED.tracking_status
-      RETURNING *;
-    `;
-
-    const { rows } = await db.query(query, [
-      tracking_id,
-      normalizedItemId,
-      last_seen,
-      tracking_status
-    ]);
-
-    results.push(rows[0]);
-  }
-
-  return results; 
+        const rows  = await sql`
+          INSERT INTO item_tracking (tracking_id, item_id, last_seen, tracking_status)
+          VALUES (${tracking_id}, ${normalizedItemId}, ${last_seen}, ${tracking_status})
+          ON CONFLICT (tracking_id)
+          DO UPDATE SET
+            item_id = EXCLUDED.item_id,
+            last_seen = EXCLUDED.last_seen,
+            tracking_status = EXCLUDED.tracking_status
+          RETURNING *;
+        `;
+        results.push(rows[0]);
+        }
+        return results;
     }
 };
