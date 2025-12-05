@@ -13,7 +13,7 @@ export const trackingController = {
 
   async getTrackingById(req, res, next) {
     try {
-      const tracking = await TrackingModel.getTrackingById(req.params.id);
+      const tracking = await TrackingModel.getTrackingById(req.params.tracking_id);
       if (!tracking) {
         return res.status(404).json({ error: 'Tracking not found' });
       }
@@ -39,7 +39,7 @@ export const trackingController = {
   async updateTracking(req, res, next) {
     try {
       const {tracking_id, item_id, tracking_status} = req.body;
-      const updated = await TrackingModel.updateTracking(req.params.id, { tracking_id, item_id, tracking_status });
+      const updated = await TrackingModel.updateTracking(req.params.tracking_id, { tracking_id, item_id, tracking_status });
       if (!updated) {
         return res.status(404).json({ error: 'Tracking not found' });
       }
@@ -50,11 +50,11 @@ export const trackingController = {
   },
 
   async patchTracking(req, res, next) {
-    const id = req.params.id;
+    const id = req.params.tracking_id;
     const fields = req.body;
 
     try {
-      const patched = await TrackingModel.patchTracking(id, fields);
+      const patched = await TrackingModel.patchTracking(tracking_id, fields);
       res.json(patched);
     } catch (error) {
       console.error(error);
@@ -65,10 +65,27 @@ export const trackingController = {
 
   async deleteTracking(req, res, next) {
     try {
-      const deleted = await TrackingModel.deleteTracking(req.params.id);
+      const deleted = await TrackingModel.deleteTracking(req.params.tracking_id);
       res.json(deleted);
     } catch (error) {
       next(error);
     }
+  },
+
+  async bulkUpdateTrackings(req, res, next) {
+    try {
+    const trackingList = req.body;
+
+    if (!Array.isArray(trackingList)) {
+      return res.status(400).json({ error: "Expected an array of tracking entries" });
+    }
+
+    const updated = await TrackingModel.upsertTrackingList(trackingList);
+    return res.status(200).json(updated);
+
+  } catch (error) {
+    console.error("Error in /trackings/bulk:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
   },
 };
