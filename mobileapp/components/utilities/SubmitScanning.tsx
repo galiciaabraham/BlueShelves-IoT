@@ -1,8 +1,8 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, Alert } from "react-native";
 import { bulkTrackingsUpdate } from '@/components/services/trackingService';
 
 
-export default function SubmitScanning({ scannedTags }: { scannedTags: any[] }) {
+export default function SubmitScanning({ scannedTags, onReset }: { scannedTags: any[], onReset: () => void }) {
 
   const handleSubmit = async (status: "found" | "removed") => {
     const now = new Date().toISOString();
@@ -17,7 +17,10 @@ export default function SubmitScanning({ scannedTags }: { scannedTags: any[] }) 
       const res = await bulkTrackingsUpdate(updates);
 
       if (res.ok) {
-        console.log(`Bulk update success (${status})`);
+        Alert.alert("Success", 
+          `Tags marked as ${status}`, 
+          [{ text: "OK", onPress: onReset }]
+        );
       } else {
         console.error("Bulk update failed", await res.text());
       }

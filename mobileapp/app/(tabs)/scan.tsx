@@ -11,6 +11,10 @@ export default function ScanScreen() {
   const [scannedTags, setScannedTags] = useState<any[]>([]);
   const [showSubmitButtons, setShowSubmitButtons] = useState(false);
 
+  const resetScan = () => {
+    setScannedTags([]);
+    setShowSubmitButtons(false);
+  }
   // Helper to fetch tracking + item
 
   const fetchTrackingWithItem = async (tracking_id: number) => {
@@ -160,11 +164,12 @@ export default function ScanScreen() {
       {showSubmitButtons && scannedTags.length > 0 && (
         <SubmitScanning
           scannedTags = {scannedTags.map((st) => ({
-            item_id: st.item_id ?? 0,
+            item_id: st.item_id,
             tracking_id: st.tracking_id,
             tracking_status: st.tracking_status,
             last_seen: st.last_seen,
           }))}
+          onReset={resetScan}
         />
       )}
     </View>
