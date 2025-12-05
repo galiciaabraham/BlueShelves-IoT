@@ -9,6 +9,19 @@ import { errorHandler } from './middleware/errorHandler.js';
 dotenv.config();
 
 const app = express();
+
+const allowedKeys = [process.env.API_SECRET_KEY, process.env.DASHBOARD_API_KEY, process.env.MOBILE_API_KEY];
+
+const apiKeyMiddleware = (req, res, next) => {
+  const apiKey = req.headers['x-api-key'];
+
+if (!apiKey || !allowedKeys.includes(apiKey)) {
+    return res.status(401).json({ message: 'Unauthorized: Invalid API Key' });
+  }
+
+  next();
+};
+
 const allowedOrigins = [
   'http://localhost:8081', 
   'http://localhost:3000',
@@ -50,18 +63,6 @@ app.get('/', (req, res) => {
 
 // Error handling middleware
 app.use(errorHandler);
-
-const allowedKeys = [process.env.API_SECRET_KEY, process.env.DASHBOARD_API_KEY, process.env.MOBILE_API_KEY];
-
-const apiKeyMiddleware = (req, res, next) => {
-  const apiKey = req.headers['x-api-key'];
-
-if (!apiKey || !allowedKeys.includes(apiKey)) {
-    return res.status(401).json({ message: 'Unauthorized: Invalid API Key' });
-  }
-
-  next();
-};
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
