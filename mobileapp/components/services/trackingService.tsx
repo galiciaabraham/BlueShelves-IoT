@@ -45,7 +45,7 @@ export async function bulkTrackingsUpdate(updates: { tracking_id: string; last_s
       if (!response.ok) {
         throw new Error('Failed to bulk update trackings');
       }
-      return response.json();
+      return response;
 
     } catch (error) {
         console.error('Error in bulkTrackingsUpdate:', error);

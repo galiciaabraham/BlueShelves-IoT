@@ -159,7 +159,7 @@ export default function ScanScreen() {
       {/* SubmitScanning Buttons */}
       {showSubmitButtons && scannedTags.length > 0 && (
         <SubmitScanning
-          scannedTags={scannedTags.map((st) => ({
+          scannedTags = {scannedTags.map((st) => ({
             item_id: st.item_id ?? 0,
             tracking_id: st.tracking_id,
             tracking_status: st.tracking_status,
