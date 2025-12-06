@@ -50,19 +50,14 @@ export const TrackingModel = {
         for (const t of trackingList) {
           const {
             tracking_id,
-            item_id,
             last_seen,
             tracking_status
           } = t;
-
-        const normalizedItemId = item_id === 0 ? null : item_id;
-
         const rows  = await sql`
-          INSERT INTO item_tracking (tracking_id, item_id, last_seen, tracking_status)
-          VALUES (${tracking_id}, ${normalizedItemId}, ${last_seen}, ${tracking_status})
+          INSERT INTO item_tracking (tracking_id, last_seen, tracking_status)
+          VALUES (${tracking_id}, ${last_seen}, ${tracking_status})
           ON CONFLICT (tracking_id)
           DO UPDATE SET
-            item_id = EXCLUDED.item_id,
             last_seen = EXCLUDED.last_seen,
             tracking_status = EXCLUDED.tracking_status
           RETURNING *;
