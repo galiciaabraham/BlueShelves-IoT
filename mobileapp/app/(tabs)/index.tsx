@@ -2,16 +2,16 @@ import { Button } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useRouter } from 'expo-router';
 import { globalStyles } from '@/styles/globalStyles';
-import { useAuth } from '@/context/AuthContext';
+// import { useAuth } from '@/context/AuthContext';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { isLoggedIn, logout } = useAuth(); // ✅ use context
+  // const { isLoggedIn, logout } = useAuth(); // ✅ use context
 
-  if (!isLoggedIn) {
-    router.push('/modal'); // redirect to login modal
-    return null;
-  }
+  // if (!isLoggedIn) {
+    // router.push('/modal'); // redirect to login modal
+  //   return null;
+  // }
 
   return (
     <View style={globalStyles.container}>
@@ -32,14 +32,14 @@ export default function HomeScreen() {
           onPress={() => router.push('/scan')}
           color="#28a745"
         />
-        <Button
+        {/* <Button
           title="Logout"
           onPress={() => {
             logout();       // ✅ simulate logout
             router.replace('/modal'); // go back to login modal
           }}
           color="#dc3545"
-        />
+        /> */}
       </View>
     </View>
   );

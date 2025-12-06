@@ -9,12 +9,12 @@ router.get('/:tracking_id', trackingController.getTrackingById);
 // Create new tracking
 router.post('/', trackingController.createTracking);
 // Update tracking
-router.put('/:id', trackingController.updateTracking);
+router.put('/:tracking_id', trackingController.updateTracking);
 //Patch tracking
-router.put('/patch/:id', trackingController.patchTracking); 
+router.put('/patch/:tracking_id', trackingController.patchTracking); 
 //Bulk update trackings
 router.post('/bulk', trackingController.bulkUpdateTrackings);
 // Delete tracking
-router.delete('/:id', trackingController.deleteTracking);
+router.delete('/:tracking_id', trackingController.deleteTracking);
 
 export default router;

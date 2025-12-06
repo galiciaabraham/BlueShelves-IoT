@@ -38,8 +38,8 @@ export const trackingController = {
 
   async updateTracking(req, res, next) {
     try {
-      const {tracking_id, item_id, tracking_status} = req.body;
-      const updated = await TrackingModel.updateTracking(req.params.tracking_id, { tracking_id, item_id, tracking_status });
+      const { item_id, last_seen, tracking_status} = req.body;
+      const updated = await TrackingModel.updateTracking(req.params.tracking_id, { item_id, last_seen, tracking_status });
       if (!updated) {
         return res.status(404).json({ error: 'Tracking not found' });
       }

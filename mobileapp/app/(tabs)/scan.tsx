@@ -2,22 +2,25 @@ import { useState } from 'react';
 import { View, Text, Pressable, ActivityIndicator, FlatList } from 'react-native';
 import { globalStyles } from '@/styles/globalStyles';
 import SubmitScanning from '@/components/utilities/SubmitScanning';
+import { fetchTracking } from '@/components/services/trackingService';
+import { fetchItemById } from '@/components/services/inventoryService';
 import { simulateScan } from '@/tagSimulator/scanService';
-import { API_BASE_URL } from '@/config'; // ✅ central config
 
 export default function ScanScreen() {
   const [isScanning, setIsScanning] = useState(false);
   const [scannedTags, setScannedTags] = useState<any[]>([]);
   const [showSubmitButtons, setShowSubmitButtons] = useState(false);
 
+  const resetScan = () => {
+    setScannedTags([]);
+    setShowSubmitButtons(false);
+  }
   // Helper to fetch tracking + item
-  const fetchTracking = async (tracking_id: number) => {
-    try {
-      const trackRes = await fetch(`${API_BASE_URL}/trackings/${tracking_id}`, {
-        headers: { Accept: 'application/json' },
-      });
 
-      if (!trackRes.ok) {
+  const fetchTrackingWithItem = async (tracking_id: number) => {
+    try {
+      const trackData = await fetchTracking(tracking_id);
+      if (!trackData) {
         return {
           tracking_id,
           tracking_status: 'unknown',
@@ -31,27 +34,32 @@ export default function ScanScreen() {
         };
       }
 
-      const trackData = await trackRes.json();
-
       let itemData = {};
       if (trackData.item_id) {
-        const itemRes = await fetch(`${API_BASE_URL}/items/${trackData.item_id}`, {
-          headers: { Accept: 'application/json' },
-        });
-        if (itemRes.ok) {
-          itemData = await itemRes.json();
+        const item = await fetchItemById(trackData.item_id);
+        if (item) {
+          itemData = {
+            item_id: item.item_id,
+            item_name: item.item_name,
+            item_color: item.item_color,
+            item_size: item.item_size,
+            item_quantity: item.item_quantity,
+            item_sku: item.item_sku,
+          };
         }
       }
 
-      // ✅ Flatten item fields directly into the returned object
+      // ✅ Flatten item fields directly into the 
+      // returned object
       return {
         tracking_id: trackData.tracking_id,
         tracking_status: trackData.tracking_status,
         last_seen: trackData.last_seen,
         ...itemData,
       };
+
     } catch (error) {
-      console.error('Error fetching tracking:', error);
+      console.error('Error merging tracking and item:', error);
       return {
         tracking_id,
         tracking_status: 'unknown',
@@ -72,7 +80,7 @@ export default function ScanScreen() {
     setShowSubmitButtons(false);
 
     const result = await simulateScan();
-    const trackingData = await fetchTracking(result.tracking_id);
+    const trackingData = await fetchTrackingWithItem(result.tracking_id);
 
     setScannedTags([trackingData]);
     setIsScanning(false);
@@ -87,7 +95,7 @@ export default function ScanScreen() {
     const results: any[] = [];
     for (let i = 0; i < 8; i++) {
       const result = await simulateScan();
-      const trackingData = await fetchTracking(result.tracking_id);
+      const trackingData = await fetchTrackingWithItem(result.tracking_id);
       results.push(trackingData);
     }
 
@@ -155,12 +163,13 @@ export default function ScanScreen() {
       {/* SubmitScanning Buttons */}
       {showSubmitButtons && scannedTags.length > 0 && (
         <SubmitScanning
-          scannedTags={scannedTags.map((st) => ({
-            item_id: st.item_id ?? 0,
+          scannedTags = {scannedTags.map((st) => ({
+            item_id: st.item_id,
             tracking_id: st.tracking_id,
             tracking_status: st.tracking_status,
             last_seen: st.last_seen,
           }))}
+          onReset={resetScan}
         />
       )}
     </View>
