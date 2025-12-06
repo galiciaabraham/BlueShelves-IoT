@@ -1,7 +1,7 @@
 // app/(auth)/login.tsx
-import React, { useState } from "react";
-import { View, TextInput, Button, Text } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
+import { Button, Text, TextInput, View } from "react-native";
 import { auth } from "../firebase";
 // @ts-ignore: 'expo-router' has no type declarations in this project
 import { useRouter } from "expo-router";
@@ -39,7 +39,7 @@ export default function Login() {
       />
       {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
       <Button title="Login" onPress={handleLogin} />
-      <Button title="Forgot Password?" onPress={() => router.push("/(auth)/forgot-password")} />
+      <Button title="Forgot Password?" onPress={() => router.push("/firebase")} />
     </View>
   );
 }
