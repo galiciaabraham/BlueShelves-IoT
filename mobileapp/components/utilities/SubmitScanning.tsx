@@ -1,9 +1,9 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, Alert } from "react-native";
+import { bulkTrackingsUpdate } from '@/components/services/trackingService';
 
 
-export default function SubmitScanning({ scannedTags }: { scannedTags: any[] }) {
+export default function SubmitScanning({ scannedTags, onReset }: { scannedTags: any[], onReset: () => void }) {
 
-  const API_URL = 'https://blueshelves-iot.onrender.com';  
   const handleSubmit = async (status: "found" | "removed") => {
     const now = new Date().toISOString();
 
@@ -14,16 +14,13 @@ export default function SubmitScanning({ scannedTags }: { scannedTags: any[] }) 
     }));
 
     try {
-      const res = await fetch(`${API_URL}/trackings/bulk`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updates),
-      });
+      const res = await bulkTrackingsUpdate(updates);
 
       if (res.ok) {
-        console.log(`Bulk update success (${status})`);
+        Alert.alert("Success", 
+          `Tags marked as ${status}`, 
+          [{ text: "OK", onPress: onReset }]
+        );
       } else {
         console.error("Bulk update failed", await res.text());
       }
