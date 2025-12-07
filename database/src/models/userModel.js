@@ -11,6 +11,11 @@ export const UserModel = {
         return rows[0];
     },
 
+    async getUserByEmail(email) {
+        const rows = await sql`SELECT * FROM users WHERE email = ${email}`;
+        return rows[0];
+    },
+
     async createUser({name, email, password, role} ) {
         const rows = await sql`
             INSERT INTO users (name, email, password, role, created_at, updated_at) VALUES (${name}, ${email}, ${password}, ${role}, NOW(), NOW()) RETURNING *`;
