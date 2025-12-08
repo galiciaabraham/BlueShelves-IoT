@@ -41,9 +41,8 @@ export default function Header() {
             <nav className={`md:flex md:items-center md:justify-between md:px-6 grow absolute md:static top-full left-0 right-0 md:border-0 border-y bg-gray-200 dark:bg-gray-900 md:bg-transparent md:dark:bg-transparent  md:p-0 ${isOpen ? 'block' : 'hidden'}`}>
                 <div className="md:space-x-4">
                     {/* Placeholder links for now */}
-                    <Link href="/dashboard" className="md:inline px-4 py-2 block hover:underline">Dashboard</Link>
+                    <Link href="/" className="md:inline px-4 py-2 block hover:underline">Dashboard</Link>
                     <Link href="/print" className="md:inline px-4 py-2 block hover:underline">Print</Link>
-                    <Link href="/settings" className="md:inline px-4 py-2 block hover:underline">Settings</Link>
                 </div>
                 <div className="space-x-4 flex items-center">
                     
