@@ -13,8 +13,8 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff",
       "dark": {
-          "image": "./assets/images/splash-icon-light.png",
-          "backgroundColor": "#000000"
+        "image": "./assets/images/splash-icon-light.png",
+        "backgroundColor": "#000000"
       }
     },
     "ios": {
@@ -32,7 +32,12 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.blueshelves.app"
+      "package": "com.blueshelves.app",
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -45,6 +50,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "09a08bb1-863b-48aa-ba48-30e4580425e5"
+      }
+    },
+    "owner": "thandokuhle"
   }
 }

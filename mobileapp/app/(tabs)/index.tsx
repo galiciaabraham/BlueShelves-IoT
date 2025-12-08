@@ -3,14 +3,21 @@ import { Text, View } from '@/components/Themed';
 import { useRouter } from 'expo-router';
 import { globalStyles } from '@/styles/globalStyles';
 import { useAuth } from '@/context/AuthContext';
+import { useEffect } from 'react';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { isLoggedIn, logout } = useAuth(); // ✅ use context
+  const { isLoggedIn, logout } = useAuth();
+
+  // ✅ Redirect safely after render
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('../login');
+    }
+  }, [isLoggedIn]);
 
   if (!isLoggedIn) {
-    router.push('../login'); // redirect to login modal
-    return null;
+    return null; // render nothing while redirecting
   }
 
   return (
@@ -35,8 +42,8 @@ export default function HomeScreen() {
         <Button
           title="Logout"
           onPress={() => {
-            logout();       // ✅ simulate logout
-            router.replace('../login'); // go back to login modal
+            logout();
+            router.replace('../login'); // ✅ safe in event handler
           }}
           color="#dc3545"
         />

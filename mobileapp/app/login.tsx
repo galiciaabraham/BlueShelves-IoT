@@ -2,39 +2,40 @@ import React, { useEffect } from 'react';
 import { View, Button, StyleSheet, Text } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
-import * as AuthSession from 'expo-auth-session';
 import { useRouter } from 'expo-router';
 import { GOOGLE_AUTH_CONFIG } from '../config'; // import from your config.ts
 
+// ✅ Must be called at the top level, outside any component
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const router = useRouter();
 
+  // ✅ Hardcode the Expo proxy redirect URI
+  const redirectUri = "https://auth.expo.io/@thandokuhle/blueshelves";
+  console.log("Redirect URI:", redirectUri);
 
-const redirectUri = "https://auth.expo.io/@thandokuhle/blueshelves";
-console.log("Redirect URI:", redirectUri);
-
-  // Configure Google OAuth
+  // ✅ Configure Google OAuth with redirectUri and useProxy
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: GOOGLE_AUTH_CONFIG.expoClientId,
     iosClientId: GOOGLE_AUTH_CONFIG.iosClientId,
     androidClientId: GOOGLE_AUTH_CONFIG.androidClientId,
     webClientId: GOOGLE_AUTH_CONFIG.webClientId,
-    redirectUri: redirectUri,
+    redirectUri,   // critical
+    // useProxy: true // ensures Expo proxy is used
   });
 
   useEffect(() => {
     if (response?.type === 'success') {
       const { authentication } = response;
-      // For now, just log user info and navigate
+      // Fetch user info from Google
       fetch('https://www.googleapis.com/userinfo/v2/me', {
         headers: { Authorization: `Bearer ${authentication?.accessToken}` },
       })
         .then(res => res.json())
         .then(userInfo => {
           console.log('User Info:', userInfo);
-          router.replace('/(tabs)'); // go to dashboard
+          router.replace('/(tabs)'); // navigate to dashboard
         })
         .catch(err => console.error(err));
     }
@@ -46,7 +47,7 @@ console.log("Redirect URI:", redirectUri);
       <Button
         title="Sign in with Google"
         disabled={!request}
-        onPress={() => promptAsync()}
+        onPress={() => promptAsync()} // ✅ no arguments
       />
     </View>
   );
