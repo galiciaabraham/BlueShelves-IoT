@@ -1,38 +1,28 @@
 // src/proxy.ts
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { decrypt } from "./lib/session";
+import { getSession } from "./lib/session";
 
-const protectedRoutes = ["/", "/profile"];
-const publicRoutes = ["/login", "/register"];
+const ROUTES = {
+  protected: ["/", "/profile", "/print"] as const,
+  public: ["/login", "/register"] as const,
+};
 
 export default async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
-  const isPublicRoute = publicRoutes.includes(path);
+  const isProtectedRoute = (ROUTES.protected as ReadonlyArray<string>).includes(path);
+  const isPublicRoute = (ROUTES.public as ReadonlyArray<string>).includes(path);
 
-  const cookie = (await cookies()).get("session")?.value;
-  if (isProtectedRoute && !cookie) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  if (isProtectedRoute) {
+    const session = await getSession();
+    if (!session?.id) {
+      return NextResponse.redirect(new URL("/login", req.nextUrl));
+    }
   }
-  
-    // If trying to access a protected route without a cookie, redirect to login
-  if (isProtectedRoute && !cookie) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
-  }
-
-  // Only attempt to decrypt if cookie exists
-  let session = null;
-  if (cookie) {
-    session = await decrypt(cookie);
-  }
-
-  if (isProtectedRoute && !session?.id) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
-  }
-
-  if (isPublicRoute && session?.id) {
-    return NextResponse.redirect(new URL("/", req.nextUrl));
+  else if (isPublicRoute) {
+    const session = await getSession();
+    if (session?.id) {
+      return NextResponse.redirect(new URL("/", req.nextUrl));
+    }
   }
 
   return NextResponse.next();
