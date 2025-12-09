@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link'; 
 import { User } from '@/types';
 import * as bcrypt from 'bcryptjs';
-import { createUser } from '@/api/services';
+import { createUser, getUserByEmail } from '@/api/services';
 import { Modal } from '@/components';
 import z from 'zod';
 import { CreateUserSchema } from '@/schemas/';
@@ -36,6 +36,13 @@ export default function RegisterPage() {
     try {
       CreateUserSchema.parse(formData);
       const { email, password, name } = formData;
+        
+      // Check if email is not in use
+      const user = await getUserByEmail(email);
+      if (user) {
+          setErrors({ email: 'Email already in use' });
+          return;
+      }
 
       // Hash the password using bcryptjs
       const salt = bcrypt.genSaltSync(10);
