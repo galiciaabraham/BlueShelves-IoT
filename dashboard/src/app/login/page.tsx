@@ -56,7 +56,7 @@ export default function LoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: user.id }),
+        body: JSON.stringify({ id: user.id, role: user.role }),
       });
 
       if (!response.ok) {
