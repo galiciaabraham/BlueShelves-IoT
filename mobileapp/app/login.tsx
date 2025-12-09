@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Button, StyleSheet, Text } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
+import * as AuthSession from 'expo-auth-session';
 import { useRouter } from 'expo-router';
 import { GOOGLE_AUTH_CONFIG } from '../config'; // import from your config.ts
 
@@ -11,18 +12,20 @@ WebBrowser.maybeCompleteAuthSession();
 export default function LoginScreen() {
   const router = useRouter();
 
-  // ✅ Hardcode the Expo proxy redirect URI
-  const redirectUri = "https://auth.expo.io/@thandokuhle/blueshelves";
+  // ✅ Use custom scheme for standalone build
+  const redirectUri = AuthSession.makeRedirectUri({
+    scheme: "blueshelves", // matches app.json
+    // useProxy: false,       // standalone build, no Expo proxy
+  });
   console.log("Redirect URI:", redirectUri);
 
-  // ✅ Configure Google OAuth with redirectUri and useProxy
+  // ✅ Configure Google OAuth with redirectUri
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: GOOGLE_AUTH_CONFIG.expoClientId,
-    iosClientId: GOOGLE_AUTH_CONFIG.iosClientId,
-    androidClientId: GOOGLE_AUTH_CONFIG.androidClientId,
-    webClientId: GOOGLE_AUTH_CONFIG.webClientId,
-    redirectUri,   // critical
-    // useProxy: true // ensures Expo proxy is used
+    clientId: GOOGLE_AUTH_CONFIG.expoClientId,   // optional for dev
+    iosClientId: GOOGLE_AUTH_CONFIG.iosClientId, // required for iOS standalone
+    androidClientId: GOOGLE_AUTH_CONFIG.androidClientId, // required for Android standalone
+    webClientId: GOOGLE_AUTH_CONFIG.webClientId, // optional for web
+    redirectUri,   // critical for standalone build
   });
 
   useEffect(() => {
