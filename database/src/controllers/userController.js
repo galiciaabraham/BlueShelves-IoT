@@ -23,6 +23,18 @@ export const userController = {
     }
   },
 
+  async getUserByEmail(req, res, next) {
+    try {
+      const user = await UserModel.getUserByEmail(req.params.email);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.json(user);
+    } catch (error) {
+      next(error);
+    }
+  },
+
   async createUser(req, res, next) {
     try {
       const { name, email, password, role } = req.body;

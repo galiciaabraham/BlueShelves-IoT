@@ -6,6 +6,8 @@ const router = express.Router();
 router.get('/', userController.getAllUsers);
 // Get user by ID
 router.get('/:id', userController.getUserById);
+// Get user by Email
+router.get('/email/:email', userController.getUserByEmail);
 // Create new user
 router.post('/', userController.createUser);
 // Update user
