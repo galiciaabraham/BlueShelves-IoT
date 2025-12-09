@@ -27,7 +27,7 @@ export const itemController = {
 
     try {
       const { item_name, item_color, item_size, item_quantity, item_sku } = req.body;
-      if (!item_name || !item_color || !item_size || !item_quantity || !item_sku) {
+      if (!item_name || !item_color || !item_size || item_quantity === undefined || item_quantity === null || !item_sku) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
       const newItem = await ItemModel.createItem({ item_name, item_color, item_size, item_quantity, item_sku });
