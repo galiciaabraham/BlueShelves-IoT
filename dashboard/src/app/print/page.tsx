@@ -39,7 +39,7 @@ export default function PrintPage() {
     return (
     <>
         <Header />
-        <div style={{ maxWidth: 600, margin: "20px auto", padding: "0 0.5rem"}}>
+        <div className="max-w-[600px] mx-auto my-5 px-2">
         <div className="my-4 mx-auto p-6 max-w-2xl bg-white dark:bg-gray-800 rounded-lg border border-gray-400 dark:border-transparent">
       <h1>Simulated Tag Printing</h1>
 
@@ -54,33 +54,19 @@ export default function PrintPage() {
         placeholder="Number of tags to generate"
         value={count}
         onChange={(e) => setCount(e.target.value)}
-        style={{
-          padding: "10px",
-          width: "100%",
-          marginTop: 12,
-          borderRadius: 6,
-          border: "1px solid #ccc",
-        }}
+        className="p-2 w-full mt-3 rounded border border-gray-300"
       />
 
       <button
         onClick={handleGenerate}
         disabled={loading}
-        style={{
-          marginTop: 12,
-          width: "100%",
-          padding: "10px",
-          background: "#0070f3",
-          color: "white",
-          borderRadius: 6,
-          border: "none",
-        }}
+        className="mt-3 w-full p-2 cursor-pointer bg-blue-600 text-white rounded border-0"
       >
         {loading ? "Generating..." : "Generate Tags"}
       </button>
 
       {message && (
-        <p style={{ marginTop: 20, fontWeight: "bold" }}>{message}</p>
+        <p className="mt-5 font-bold">{message}</p>
       )}
       </div>
     </div>
