@@ -11,9 +11,9 @@ export const TrackingModel = {
         return rows[0];
     },
 
-    async createTracking({ item_id, tracking_status} ) {
+    async createTracking({ tracking_id, item_id, tracking_status} ) {
         const rows = await sql`
-            INSERT INTO item_tracking (item_id, last_seen, tracking_status) VALUES (${item_id}, NOW(), ${tracking_status}) RETURNING *`;
+            INSERT INTO item_tracking (tracking_id, item_id, last_seen, tracking_status) VALUES (${tracking_id}, ${item_id}, NOW(), ${tracking_status}) RETURNING *`;
         return rows[0];
     },
 
