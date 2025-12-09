@@ -29,6 +29,74 @@ export const mockTags: MockTag[] = [
     tracking_status: 'active',
   },
 
+  // Newly generated tags for simulation
+   {
+    tracking_id: 140993,
+    item_id: 1,
+    last_seen: "2025-12-09T05:18:19.63337Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 205123,
+    item_id: 1,
+    last_seen: "2025-12-09T05:18:19.466207Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 380040,
+    item_id: 2,
+    last_seen: "2025-12-09T05:18:18.464495Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 502324,
+    item_id: 2,
+    last_seen: "2025-12-09T05:18:18.667163Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 905483,
+    item_id: 2,
+    last_seen: "2025-12-09T05:18:20.227136Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 307991,
+    item_id: 3,
+    last_seen: "2025-12-09T05:18:19.086133Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 317641,
+    item_id: 3,
+    last_seen: "2025-12-09T05:17:53.71681Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 640621,
+    item_id: 3,
+    last_seen: "2025-12-09T05:18:20.002283Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 743041,
+    item_id: 3,
+    last_seen: "2025-12-09T05:18:19.795783Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 845156,
+    item_id: 3,
+    last_seen: "2025-12-09T05:18:18.887686Z",
+    tracking_status: "lost",
+  },
+  {
+    tracking_id: 926929,
+    item_id: 3,
+    last_seen: "2025-12-09T05:18:19.286107Z",
+    tracking_status: "lost",
+  },
+
   // Tags for items 4–11 (new UUIDs assigned for simulation)
   {
     tracking_id: 4,

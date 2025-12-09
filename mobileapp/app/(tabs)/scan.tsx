@@ -106,7 +106,7 @@ export default function ScanScreen() {
 
   return (
     <View style={globalStyles.container}>
-      <Text style={globalStyles.title}>Scan for Devices</Text>
+      <Text style={globalStyles.title}>Scan for Tags </Text>
       <Text style={globalStyles.subtitle}>Tap on a card to see details</Text>
 
       {isScanning ? (

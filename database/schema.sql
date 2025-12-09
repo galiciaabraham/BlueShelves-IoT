@@ -1,4 +1,4 @@
--- User table creation
+-- -- User table creation
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL, 
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS items (
 
 -- Item tracking table creation
 CREATE TABLE IF NOT EXISTS item_tracking (
-    tracking_id SERIAL PRIMARY KEY,
+    tracking_id INTEGER PRIMARY KEY,
     item_id INT REFERENCES items(item_id) ON DELETE CASCADE,
     last_seen TIMESTAMP DEFAULT NOW(),
     tracking_status VARCHAR(50) NOT NULL DEFAULT 'lost'

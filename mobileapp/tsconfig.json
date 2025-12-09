@@ -16,5 +16,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"                          // ✅ ensures environment variable types are included
-  ]
+, "../dashboard/src/utils/generateTags.ts"  ]
 }

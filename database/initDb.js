@@ -24,7 +24,6 @@ async function init() {
             await pool.query(`
                 DROP TABLE IF EXISTS item_tracking CASCADE;
                 DROP TABLE IF EXISTS items CASCADE;
-                DROP TABLE IF EXISTS users CASCADE;
             `);
             console.log('Existing tables dropped.');
         }
