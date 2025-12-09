@@ -4,10 +4,27 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { FaUserCircle } from 'react-icons/fa';
 
 export default function Header() {
     const [isOpen, setIsOpen] = useState(false)
+      const router = useRouter();
 
+      const handleLogout = async () => {
+        try {
+          const response = await fetch("/api/session/logout", {
+            method: "POST",
+          });
+
+          if (response.ok) {
+            router.push("/login");
+          }
+        } catch (error) {
+          console.error("Logout failed:", error);
+        }
+      };
+      
   return (
     <header className="sticky top-0 z-50 border-b py-4 bg-white dark:bg-zinc-900 shadow-sm">
         <div className="container mx-auto px-4 flex items-center justify-between">
@@ -44,16 +61,17 @@ export default function Header() {
                     <Link href="/" className="md:inline px-4 py-2 block hover:underline">Dashboard</Link>
                     <Link href="/print" className="md:inline px-4 py-2 block hover:underline">Print</Link>
                 </div>
-                <div className="space-x-4 flex items-center">
+                <div className="space-x-4 md:flex items-center">
                     
                     <button
-                    onClick={() => alert('Logging out...')}
-                    className="md:inline px-4 py-2 block hover:underline w-full text-left"
+                    onClick={handleLogout}
+                    className="md:inline px-4 py-2 block cursor-pointer hover:underline w-full text-left"
                     >
                     Logout
                     </button>
                     <Link href="/profile">
-                    <div className="hidden md:block w-8 h-8 bg-gray-300 rounded-full cursor-pointer hover:ring-2 hover:ring-blue-500" />
+                        <FaUserCircle className="hidden md:block text-gray-700 dark:text-gray-200" size={40} />
+                        <span className="block md:hidden px-4 py-2  hover:underline w-full text-left">Profile</span>
                     </Link>
                 </div>
             </nav>
