@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { generateTags } from "@/utils/generateTags";
+import { Footer, Header } from "@/components";
 
 export default function PrintPage() {
     const [ count, setCount ] = useState("");
@@ -36,7 +37,10 @@ export default function PrintPage() {
  
 
     return (
-        <div style={{ maxWidth: 600, margin: "20px auto" }}>
+    <>
+        <Header />
+        <div style={{ maxWidth: 600, margin: "20px auto", padding: "0 0.5rem"}}>
+        <div className="my-4 mx-auto p-6 max-w-2xl bg-white dark:bg-gray-800 rounded-lg border border-gray-400 dark:border-transparent">
       <h1>Simulated Tag Printing</h1>
 
       <p>
@@ -78,6 +82,9 @@ export default function PrintPage() {
       {message && (
         <p style={{ marginTop: 20, fontWeight: "bold" }}>{message}</p>
       )}
+      </div>
     </div>
+    <Footer />
+    </>
   );
 }
