@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 
 //mocking login. Google auth commented out below
 
-export default function LoginScreen() {
+export default function LoginScreen({onLoginSuccess} : {onLoginSuccess: () => void}) {
   const router = useRouter();
 
   // Local state for mock login
@@ -17,7 +17,7 @@ export default function LoginScreen() {
   const handleLogin = () => {
     if (password === BUILT_IN_PASSWORD) {
       console.log('Mock login successful for user:', username);
-      router.replace('/(tabs)'); // navigate to dashboard
+      onLoginSuccess(); // navigate to dashboard
     } else {
       Alert.alert('Login Failed', 'Incorrect password. Try again.');
     }

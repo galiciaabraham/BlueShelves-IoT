@@ -4,14 +4,12 @@ import { useRouter } from 'expo-router';
 import { globalStyles } from '@/styles/globalStyles';
 // import { useAuth } from '@/context/AuthContext';
 
-export default function HomeScreen() {
+export default function HomeScreen(isLoggedIn: boolean) {
   const router = useRouter();
-  // const { isLoggedIn, logout } = useAuth(); // ✅ use context
 
-  // if (!isLoggedIn) {
-    // router.push('/modal'); // redirect to login modal
-  //   return null;
-  // }
+  if (!isLoggedIn) {
+    router.push('/login'); // redirect to login modal
+  }
 
   return (
     <View style={globalStyles.container}>
