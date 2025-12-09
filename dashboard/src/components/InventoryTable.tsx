@@ -94,25 +94,15 @@ export default function InventoryTable({
           ) : sortedItems.length > 0 ? (
             // Show data when not loading and items exist
             sortedItems.map((item, index) => (
-              <tr key={index}>
-                <td
-                  className="border p-2 hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
-                  onClick={() => {
-                    setSelectedItem(item);
-                    setIsEditModalOpen(true);
-                  }}
-                >
-                  {item.item_sku.toUpperCase()}
-                </td>
-                <td
-                  className="border p-2 hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
-                  onClick={() => {
-                    setSelectedItem(item);
-                    setIsEditModalOpen(true);
-                  }}
-                >
-                  {toTitleCase(item.item_name)}
-                </td>
+              <tr key={index}
+                className="hover:text-blue-900 dark:hover:text-blue-400 cursor-pointer"
+                onClick={() => {
+                setSelectedItem(item);
+                setIsEditModalOpen(true);
+                }}
+              >
+                <td className="border p-2">{item.item_sku.toUpperCase()}</td>
+                <td className="border p-2">{toTitleCase(item.item_name)}</td>
                 <td className="border p-2">{toTitleCase(item.item_color)}</td>
                 <td className="border p-2">{capitalizeFirstLetter(item.item_size)}</td>
                 <td className="border p-2">{item.item_quantity}</td>
