@@ -4,7 +4,7 @@ import { createSession, getSession } from '@/lib/session';
 
 export async function POST(request: Request) {
   try {
-    const { id } = await request.json();
+    const { id, role } = await request.json();
 
     if (!id) {
       return NextResponse.json(
@@ -13,7 +13,14 @@ export async function POST(request: Request) {
       );
     }
 
-    await createSession(id);
+    if (!role || (role !== 'user' && role !== 'admin')) {
+      return NextResponse.json(
+        { error: 'Role must be either "user" or "admin"' },
+        { status: 400 }
+      );
+    }
+
+    await createSession(id, role);
 
     return NextResponse.json(
       { success: true },
@@ -44,7 +51,8 @@ export async function GET() {
       {
         authenticated: true,
         id: session.id,
-        expiresAt: session.expiresAt
+        expiresAt: session.expiresAt,
+        role: session.role,
       },
       { status: 200 }
     );

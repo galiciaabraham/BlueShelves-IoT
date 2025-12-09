@@ -1,7 +1,7 @@
 // src/components/EditUserModal.tsx
 import { useEffect, useState } from 'react';
 import { User } from '@/types';
-import { updateUser } from '@/api/services';
+import { getUserByEmail, updateUser } from '@/api/services';
 import { Modal } from './Modal';
 import { UpdateUserSchema } from '@/schemas';
 import z from 'zod';
@@ -42,6 +42,14 @@ export default function EditUserModal({ isOpen, onClose, user, onSuccess }: Edit
     e.preventDefault();
     try {
       const validatedData = UpdateUserSchema.parse({ ...formData, id: user.id });
+
+      // Check if email is not in use
+      const data = await getUserByEmail(formData.email);
+      if (data) {
+          setErrors({ email: 'Email already in use' });
+          return;
+      }
+
       await updateUser(user.id, { ...validatedData, role: user.role, password: user.password, updated_at: new Date(Date.now()) });
       onSuccess();
       onClose();
