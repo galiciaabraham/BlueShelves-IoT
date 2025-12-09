@@ -3,11 +3,12 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { use, useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { AuthProvider } from '@/context/AuthContext';
-
+import { View, ActivityIndicator } from 'react-native';
 import { useColorScheme } from '@/components/useColorScheme';
+import LoginScreen from './login';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -23,6 +24,8 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Example state 
+
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -43,6 +46,20 @@ export default function RootLayout() {
     return null;
   }
 
+
+  if (isLoggedIn === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (!isLoggedIn) {
+
+    return <LoginScreen onLoginSuccess ={() => setIsLoggedIn(true)} />;
+}
+
   return <RootLayoutNav />;
 }
 
@@ -54,7 +71,6 @@ function RootLayoutNav() {
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
         </Stack>
       </ThemeProvider>
     </AuthProvider>
