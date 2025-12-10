@@ -83,7 +83,7 @@ root/
 * Built using Next.js.
 * Provides an administrative dashboard to manage items.
 * Includes CRUD functionality mirroring the mobile app for items.
-* Provides an access to the tag generator which assigns a unique ID to each tracking. Since this page '/print' is role protected, to access the tag generator use **`username: test4@mail.com`** and **`password: password1`** since that user has admin permissions. for general access simply register and login with a new username and password. 
+* Provides an access to the tag generator which assigns a unique ID to each tracking. Since this page '/print' is role protected, to access the tag generator use **`username: test4@gmail.com`** and **`password: password1`** since that user has admin permissions. for general access simply register and login with a new username and password. 
 * Hosted on **Vercel**
 
 ---
