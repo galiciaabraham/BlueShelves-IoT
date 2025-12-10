@@ -1,4 +1,5 @@
 ## BlueShelves. 
+<img width="192" height="192" alt="image" src="https://github.com/user-attachments/assets/1bf28f70-629f-4b8c-8a45-5623324fea65" />
 
 ## Overview
 
@@ -67,6 +68,7 @@ root/
   
 * Manages Items details through CRUD operations.
 * Simulates RFID reads via API endpoints
+* Secured by CORS and API-Key requirements.
 
 ### **2. Mobile App (React Native + Expo)**
 
@@ -81,7 +83,7 @@ root/
 * Built using Next.js.
 * Provides an administrative dashboard to manage items.
 * Includes CRUD functionality mirroring the mobile app for items.
-* Provides an access to the tag generator which assigns a unique ID to each tracking. To access it use **`username: admin4@mail.com`** and **`password: password1`**
+* Provides an access to the tag generator which assigns a unique ID to each tracking. Since this page '/print' is role protected, to access the tag generator use **`username: test4@mail.com`** and **`password: password1`** since that user has admin permissions. for general access simply register and login with a new username and password. 
 * Hosted on **Vercel**
 
 ---
@@ -145,10 +147,12 @@ root/
 
 ## User Guide / How to Evaluate the Project
 
+* See .env.example on each specific sub-folder to add the right environmental variables for testing.
+
 ### **1. Mobile App (Expo)**
 
 * Install dependencies: `npm install`
-* Start the development server: `npm run start`
+* Use Expo Go for testing: 'npm run start' --> 's' for expo Go OR 'npx expo start --go'
 * **Login credentials:**
 
   * Username: *any value*
@@ -192,7 +196,7 @@ root/
 ## Future Improvements
 
 * Real RFID integration
-* Role‑based user authentication
+* Extend Role‑based user authentication
 * Extended analytics on tracking events
 * Correlation between tracking count and items quantity count. 
 
@@ -218,8 +222,8 @@ This project is built using:
 * [React Docs](https://react.dev/)
 * [React Native Docs](https://reactnative.dev/docs/getting-started)
 * [PostgreSQL Docs](https://www.postgresql.org/docs/)
-* [Web dashboard PROD] ()
-* [OnRender API PROD deployment] ()
+* [Web dashboard PROD](https://blue-shelves-iot-web-dashboard.vercel.app/)
+* [OnRender API PROD deployment](https://blueshelves-iot.onrender.com/)
 
 # Collaborators
 
