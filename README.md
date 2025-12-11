@@ -75,15 +75,15 @@ root/
 * Built with Expo for cross-platform iOS/Android compatibility.
 * Performs CRUD operations for item management and tag tracking.
 * Simulates RFID tag scanning and status update.
-* Authentication mocks simple username + password logic (originally using Google OAuth but simplified for grading purposes.
-* Login password: **`letmein123`** (any username).
+* Authentication mocks simple username + password logic (originally using Google OAuth but simplified for grading purposes.)
+* Login username: (any username) password: **`letmein123`**.
 
 ### **3. Web Dashboard (Next.js + Vercel)**
 
 * Built using Next.js.
 * Provides an administrative dashboard to manage items.
 * Includes CRUD functionality mirroring the mobile app for items.
-* Provides an access to the tag generator which assigns a unique ID to each tracking. Since this page '/print' is role protected, to access the tag generator use **`username: test4@mail.com`** and **`password: password1`** since that user has admin permissions. for general access simply register and login with a new username and password. 
+* Provides an access to the tag generator which assigns a unique ID to each tracking. Since this page '/print' is role protected, to access the tag generator use **`email: test4@gmail.com`** and **`password: password1`** since that user has admin permissions. for general access simply register and login with a new email and password.
 * Hosted on **Vercel**
 
 ---
@@ -153,6 +153,7 @@ root/
 
 * Install dependencies: `npm install`
 * Use Expo Go for testing: 'npm run start' --> 's' for expo Go OR 'npx expo start --go'
+  * **Note:** **Ensure that you have the Expo Go app installed on your mobile phone.** You can download it from your device's app store. Once the app is installed, use it to scan the QR code generated in the console.
 * **Login credentials:**
 
   * Username: *any value*
@@ -166,11 +167,22 @@ root/
 ### **2. Web Dashboard (Next.js)**
 
 * Start development server: `npm run start`
-* Login credentials will be provided soon
+* For General Access:
+  * Register a new account with your email and password.
+* For Admin Access, use these Login Credentials:
+  * **Email:** **`test4@gmail.com`**
+  * **Password:** **`password1`**  
+    *This user has admin permissions and can access the tag generator.*
+
+
 * From there you can:
 
   * View and manage all items
-  * Generate tags with unique random ids via the /print tab (Access through the nav bar). If tested locally, you may send a request to the API with GET http://localhost:3000/trackings and see how the new trackings have been added.   
+  * Generate tags with unique random ids via the **/print** tab (Accessible through the navigation bar). If tested locally, you may send a request to the API with:
+    ```http
+    GET http://localhost:3000/trackings
+    ```
+    to see how the new trackings have been added.
   * Perform CRUD operations identical to the mobile app on the items.
 
 ### **3. API (Express.js)**
